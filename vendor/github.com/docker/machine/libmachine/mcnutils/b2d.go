@@ -30,6 +30,8 @@ const (
 
 var (
 	GithubAPIToken string
+	// githubPrivate is set to false for regular builds
+	githubPrivate = false
 )
 
 var (
@@ -259,6 +261,22 @@ func (b *b2dReleaseGetter) getReleaseURL(apiURL string) (string, error) {
 	}
 
 	log.Infof("Latest release for %s/%s/%s is %s", host, org, repo, tag)
+
+	if githubPrivate {
+		releaseid, err := b.getReleaseID(apiURL)
+		if err != nil {
+			return "", err
+		}
+		isourl, err := b.getISOAssetURL(releaseid, org, repo)
+		if err != nil {
+			return "", err
+		}
+		// curl -vLJO -H 'Accept: application/octet-stream' \
+		// 'https://api.github.com/repos/ORGANIZATION/lambda-linux-vbox/releases/assets/XXXXXXX?access_token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+		url := fmt.Sprintf("%s?access_token=%s", isourl, GithubAPIToken)
+		return url, nil
+	}
+
 	url := fmt.Sprintf("%s://%s/%s/%s/releases/download/%s/%s", scheme, host, org, repo, tag, b.isoFilename)
 	return url, nil
 }
@@ -274,6 +292,24 @@ func (*b2dReleaseGetter) download(dir, file, isoURL string) error {
 		}
 
 		src = s
+	} else if githubPrivate {
+		client := getClient()
+		req, err := http.NewRequest("GET", isoURL, nil)
+		if err != nil {
+			return err
+		}
+		// curl -vLJO -H 'Accept: application/octet-stream' \
+		// 'https://api.github.com/repos/ORGANIZATION/lambda-linux-vbox/releases/assets/XXXXXXX?access_token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+		req.Header.Add("Accept", fmt.Sprintf("application/octet-stream"))
+		rsp, err := client.Do(req)
+		if err != nil {
+			return err
+		}
+		src = &ReaderWithProgress{
+			ReadCloser:     rsp.Body,
+			out:            os.Stdout,
+			expectedLength: rsp.ContentLength,
+		}
 	} else {
 		client := getClient()
 		s, err := client.Get(isoURL)
