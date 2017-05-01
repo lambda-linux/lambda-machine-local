@@ -26,7 +26,9 @@ func cmdConfig(c CommandLine, api libmachine.API) error {
 		return err
 	}
 
-	dockerHost, _, err := check.DefaultConnChecker.Check(host, c.Bool("swarm"))
+	// The second argument for `Check` method is for swarm. We set it to
+	// false
+	dockerHost, _, err := check.DefaultConnChecker.Check(host, false)
 	if err != nil {
 		return fmt.Errorf("Error running connection boilerplate: %s", err)
 	}
