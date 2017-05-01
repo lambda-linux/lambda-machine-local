@@ -1,0 +1,155 @@
+#!/usr/bin/python2.7
+
+import argparse
+import os
+import shlex
+import subprocess
+import sys
+import yaml
+import mako.template
+
+
+def gen_release_desc(release_yaml):
+    templ = """${'## Installation'}
+
+Thank you for using Lambda Machine Local.
+
+You can use the following commands to install or upgrade:
+
+On OS X
+```console
+$ curl -L https://github.com/lambda-linux/lambda-machine-local/releases/download/${data['github_tag']}/lambda-machine-local-Darwin-x86_64 > /usr/local/bin/lambda-machine-local && ${'\\\\'}
+  chmod +x /usr/local/bin/lambda-machine-local
+```
+On Linux
+```console
+$ curl -L https://github.com/lambda-linux/lambda-machine-local/releases/download/${data['github_tag']}/lambda-machine-local-Linux-x86_64 > /tmp/lambda-machine-local && ${'\\\\'}
+  chmod +x /tmp/lambda-machine-local && ${'\\\\'}
+  sudo cp /tmp/lambda-machine-local /usr/local/bin/lambda-machine-local
+```
+On Windows with [Git Bash](https://git-for-windows.github.io/) or [MSYS2](http://www.msys2.org/)
+```console
+$ if [[ ! -d "$HOME/bin" ]]; then mkdir -p "$HOME/bin"; fi && ${'\\\\'}
+  curl -L https://github.com/lambda-linux/lambda-machine-local/releases/download/${data['github_tag']}/lambda-machine-local-Windows-x86_64.exe > "$HOME/bin/lambda-machine-local.exe" && ${'\\\\'}
+  chmod +x "$HOME/bin/lambda-machine-local.exe"
+```
+
+${'#### Checksum'}
+- lambda-machine-local-Darwin-x86_64
+    - sha256 `${data['lambda-machine-local-Darwin-x86_64']['sha256']}`
+    - md5 `${data['lambda-machine-local-Darwin-x86_64']['md5']}`
+- lambda-machine-local-Linux-x86_64
+    - sha256 `${data['lambda-machine-local-Linux-x86_64']['sha256']}`
+    - md5 `${data['lambda-machine-local-Linux-x86_64']['md5']}`
+- lambda-machine-local-Windows-x86_64
+    - sha256 `${data['lambda-machine-local-Windows-x86_64.exe']['sha256']}`
+    - md5 `${data['lambda-machine-local-Windows-x86_64.exe']['md5']}`
+"""
+    release_desc_template = mako.template.Template(templ)
+
+    return release_desc_template.render(data=release_yaml)
+
+
+def read_release_yaml():
+    with open('release.yaml', 'r') as yaml_file:
+        yaml_string = yaml_file.read()
+    x = yaml.load_all(yaml_string, Loader=yaml.CLoader)
+    return x.next()
+
+
+def binary_checksums(bindir):
+    checksums = {}
+
+    filenames = [
+        'lambda-machine-local-Darwin-x86_64',
+        'lambda-machine-local-Linux-x86_64',
+        'lambda-machine-local-Windows-x86_64.exe'
+    ]
+
+    for filename in filenames:
+        checksums[filename] = {}
+
+        cmd = "sha256sum %s" % os.path.join(bindir, filename)
+        output = subprocess.check_output(shlex.split(cmd))
+        checksums[filename]['sha256'] = output.split()[0]
+
+        cmd = "md5sum %s" % os.path.join(bindir, filename)
+        output = subprocess.check_output(shlex.split(cmd))
+        checksums[filename]['md5'] = output.split()[0]
+
+    return checksums
+
+
+def main():
+    release_yaml = read_release_yaml()
+
+    parser = argparse.ArgumentParser(
+        description='Release lambda-machine-local on GitHub',
+        usage='''release <args>
+--github_security_token GitHub token
+--bin_dir               Path to lambda-machine-local binaries directory
+--pre_release           Indicate if pre-release
+''')
+    parser.add_argument(
+        '--github_security_token', help='GitHub token', required=True)
+    parser.add_argument(
+        '--bin_dir',
+        help='Path to lambda-machine-local binaries directory',
+        required=True)
+    parser.add_argument(
+        '--pre_release',
+        type=bool,
+        default=False,
+        help='Indicate if pre-release')
+    args = parser.parse_args(sys.argv[1:])
+
+    if not os.path.isdir(args.bin_dir):
+        print "%s does not exist!" % args.bin_dir
+        sys.exit(1)
+
+    release_yaml.update(binary_checksums(args.bin_dir))
+
+    release_desc = gen_release_desc(release_yaml)
+
+    print "Checking if release already exists"
+    cmd = "github-release info --security-token %s --user %s --repo %s --tag %s" % (
+        args.github_security_token, release_yaml['github_user'],
+        release_yaml['github_repo'], release_yaml['github_tag'])
+    ret = subprocess.call(shlex.split(cmd))
+
+    if ret != 1:
+        print "Release already exists, cleaning it up"
+        cmd = "github-release delete --security-token %s --user %s --repo %s --tag %s" % (
+            args.github_security_token, release_yaml['github_user'],
+            release_yaml['github_repo'], release_yaml['github_tag'])
+        subprocess.check_output(shlex.split(cmd))
+
+    print "Creating release on github"
+    if args.pre_release:
+        cmd = "github-release release --pre-release --security-token %s --user %s --repo %s --tag %s --name %s --description '%s'" % (
+            args.github_security_token, release_yaml['github_user'],
+            release_yaml['github_repo'], release_yaml['github_tag'],
+            release_yaml['github_tag'], release_desc)
+    else:
+        cmd = "github-release release --security-token %s --user %s --repo %s --tag %s --name %s --description '%s'" % (
+            args.github_security_token, release_yaml['github_user'],
+            release_yaml['github_repo'], release_yaml['github_tag'],
+            release_yaml['github_tag'], release_desc)
+    subprocess.check_output(shlex.split(cmd))
+
+    filenames = [
+        'lambda-machine-local-Darwin-x86_64',
+        'lambda-machine-local-Linux-x86_64',
+        'lambda-machine-local-Windows-x86_64.exe'
+    ]
+    for filename in filenames:
+        print "Uploading %s" % filename
+        cmd = "github-release upload --security-token %s --user %s --repo %s --tag %s --name %s --file %s" % (
+            args.github_security_token, release_yaml['github_user'],
+            release_yaml['github_repo'], release_yaml['github_tag'], filename,
+            os.path.join(args.bin_dir, filename))
+        subprocess.check_output(shlex.split(cmd))
+
+
+if __name__ == '__main__':
+    main()
