@@ -21,12 +21,6 @@ import (
 	"github.com/docker/machine/libmachine/swarm"
 )
 
-func init() {
-	Register("boot2docker", &RegisteredProvisioner{
-		New: NewBoot2DockerProvisioner,
-	})
-}
-
 func NewBoot2DockerProvisioner(d drivers.Driver) Provisioner {
 	return &Boot2DockerProvisioner{
 		Driver: d,

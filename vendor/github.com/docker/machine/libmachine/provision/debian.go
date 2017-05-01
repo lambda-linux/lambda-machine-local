@@ -13,12 +13,6 @@ import (
 	"github.com/docker/machine/libmachine/swarm"
 )
 
-func init() {
-	Register("Debian", &RegisteredProvisioner{
-		New: NewDebianProvisioner,
-	})
-}
-
 func NewDebianProvisioner(d drivers.Driver) Provisioner {
 	return &DebianProvisioner{
 		NewSystemdProvisioner("debian", d),
