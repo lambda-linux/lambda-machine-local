@@ -6,6 +6,10 @@ import:
   version: v1.11.0-6-g0302d39
 - package: github.com/skarademir/naturalsort
   version: 69a5d87
+- package: golang.org/x/sys
+  version: d9157a9
+  subpackages:
+  - windows/registry
 testImport:
 - package: github.com/stretchr/testify
   version: v1.1.3-4-g1f4a164

@@ -1,5 +1,5 @@
-hash: e7e5b3c3816e4ac993570df002414a2f35c1751df6aa7eadfe14dc21f7d3a3d2
-updated: 2017-04-28T03:24:05.610901115Z
+hash: 4abcf6735a1a1f0f41863a36462a8fd02becc0b5c48bedd079440b1abe7ea4ed
+updated: 2017-04-28T03:27:49.31235159Z
 imports:
 - name: github.com/codegangsta/cli
   version: 0302d3914d2a6ad61404584cdae6e6dbc9c03599
@@ -7,6 +7,10 @@ imports:
   version: 5b274558ea6ca822c06dd407a4e774a0105c3f60
 - name: github.com/skarademir/naturalsort
   version: 69a5d87bef620f77ee8508db30c846b3b84b111e
+- name: golang.org/x/sys
+  version: d9157a9621b69ad1d8d77a1933590c416593f24f
+  subpackages:
+  - windows/registry
 testImports:
 - name: github.com/stretchr/testify
   version: 1f4a1643a57e798696635ea4c126e9127adb7d3c
