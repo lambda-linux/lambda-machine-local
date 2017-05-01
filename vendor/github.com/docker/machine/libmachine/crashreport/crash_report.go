@@ -76,7 +76,7 @@ func (r *BugsnagCrashReporter) Send(err CrashError) error {
 		// XXX we need to abuse bugsnag metrics to get the OS/ARCH information as a usable filter
 		// Can do that with either "stage" or "hostname"
 		ReleaseStage:    fmt.Sprintf("%s (%s)", runtime.GOOS, runtime.GOARCH),
-		ProjectPackages: []string{"github.com/docker/machine/[^v]*"},
+		ProjectPackages: []string{"github.com/lambda-linux/lambda-machine-local/[^v]*", "github.com/docker/machine/libmachine/**"},
 		AppVersion:      version.FullVersion(),
 		Synchronous:     true,
 		PanicHandler:    func() {},
