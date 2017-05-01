@@ -1,0 +1,4 @@
+ll-user ALL = NOPASSWD: ALL
+
+# User rules for ll-user
+ll-user ALL=(ALL) NOPASSWD:ALL
