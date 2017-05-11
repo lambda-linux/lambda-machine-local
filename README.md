@@ -80,6 +80,7 @@ used by many AWS services such as [AWS Lambda](https://aws.amazon.com/lambda/).
   * [Installation](#installation)
   * [Getting Started](#getting_started)
     * [Prerequisite Information](#prerequisite_information)
+      * [Running Lambda Machine Local alongside Docker Machine](#running_lambda_machine_local_alongside_docker_machine)
     * [Using Lambda Machine Local to run containers](#using_lambda_machine_local_to_run_containers)
       * [Creating a container host virtual machine](#creating_a_container_host_virtual_machine)
       * [Running containers](#running_containers)
@@ -254,6 +255,55 @@ see
 [this](http://www.hanselman.com/blog/switcheasilybetweenvirtualboxandhypervwithabcdeditbootentryinwindows81.aspx) link
 for information on how to setup Windows to toggle between Hyper-V and
 VirtualBox.
+
+<a name="running_lambda_machine_local_alongside_docker_machine"></a>
+#### Running Lambda Machine Local alongside Docker Machine
+
+Lambda Machine Local and Docker Machine both use VirtualBox to manage their
+respective container host virtual machines. In case of Docker Machine, it uses
+boot2docker ISO image. In Lambda Machine Local we use Lambda Linux VirtualBox
+Flavor ISO image.
+
+When running Lambda Machine Local and Docker Machine at the same time, it is
+**important** not to use the same container host virtual machine name. We
+recommend that you use a prefix to distinguish between your Docker Machine and
+Lambda Machine Local container virtual machines. In the following example we are
+using the prefixes `b2d-` and `ll-`.
+
+```console
+$ machine create b2d-default
+
+$ lambda-machine-local create ll-default
+```
+
+If by mistake you create container host virtual machines with the same name,
+you will encounter the following error.
+
+```console
+VBoxManage: error: The machine 'default' is already locked for a session (or being unlocked)
+VBoxManage: error: Details: code VBOX_E_INVALID_OBJECT_STATE (0x80bb0007), component MachineWrap, interface
+IMachine, callee nsISupports
+VBoxManage: error: Context: "LockMachine(a->session, LockType_Write)" at line 493 of file VBoxManageModifyVM.cpp
+```
+
+You can use `VBoxManage` command to delete the virtual machines and remove the
+metadata.
+
+```console
+$ VBoxManage list vms
+"default" {136b3d00-d9bb-45ba-a927-9bca3087638e}
+"default" {6b80915a-1c66-47c1-bc8c-fb6fdec42560}
+
+$ VBoxManage unregistervm --delete 136b3d00-d9bb-45ba-a927-9bca3087638e
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+
+$ VBoxManage unregistervm --delete 6b80915a-1c66-47c1-bc8c-fb6fdec42560
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+
+$ rm -rf ~/.docker/machine/machines/default
+
+$ rm -rf ~/.docker/lambda-machine-local/machines/default
+```
 
 <a name="using_lambda_machine_local_to_run_containers"></a>
 ### Using Lambda Machine Local to run containers
