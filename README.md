@@ -108,6 +108,7 @@ For example &ndash; You can run `lambda-machine-local env default`. Then after
 following on-screen instructions to complete environment setup, you can run
 `docker ps`, `docker run --rm amazonlinux echo hello world`, and so forth.
 
+<a name="components"></a>
 Following components are used by Lambda Machine Local.
 
 | Component        | Why is it included? / Remarks |
