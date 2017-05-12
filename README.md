@@ -11,20 +11,20 @@ its container host OS and is based
 on [Amazon Linux](https://aws.amazon.com/amazon-linux-ami/), the Linux operating
 system that powers AWS.
 
-You can download Lambda Machine Local for Mac, Linux and
+You can download Lambda Machine Local for Mac, Linux or
 Windows [here](https://github.com/lambda-linux/lambda-machine-local/releases).
 
 It works a bit like this &ndash;
 
 ```console
-$ lambda-machine-local create default
+$ lambda-machine-local create ll-default
 Running pre-create checks...
 [...]
-(default) Creating VirtualBox VM...
-(default) Creating SSH key...
-(default) Starting the VM...
-(default) Check network to re-create if needed...
-(default) Waiting for an IP...
+(ll-default) Creating VirtualBox VM...
+(ll-default) Creating SSH key...
+(ll-default) Starting the VM...
+(ll-default) Check network to re-create if needed...
+(ll-default) Waiting for an IP...
 Waiting for machine to be running, this may take a few minutes...
 Detecting operating system of created instance...
 Waiting for SSH to be available...
@@ -35,13 +35,13 @@ Copying certs to the remote machine...
 Checking connection to Docker...
 Docker is up and running!
 To see how to connect your Docker Client to the Docker Engine running on this virtual machine,
-run: lambda-machine-local env default
+run: lambda-machine-local env ll-default
 
 $ lambda-machine-local ls
-NAME      ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
-default   -        virtualbox   Running   tcp://192.168.99.100:2376   v1.12.6
+NAME         ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
+ll-default   -        virtualbox   Running   tcp://192.168.99.100:2376   v1.12.6
 
-$ eval "$(lambda-machine-local env default)"
+$ eval "$(lambda-machine-local env ll-default)"
 
 $ docker run --rm amazonlinux echo hello world
 Unable to find image 'amazonlinux:latest' locally
@@ -64,9 +64,9 @@ If you don't have a preferred operating system for your container images, we
 recommend that you consider Amazon Linux. It is a proven operating system and is
 used by many AWS services such as [AWS Lambda](https://aws.amazon.com/lambda/).
 
-<a name="toc"></a>
 -----------------------------------------
 
+<a name="toc"></a>
 **Related resources**:
   [Website](https://lambda-linux.io/) |
   [Slack](http://slack.lambda-linux.io/) |
@@ -90,7 +90,7 @@ used by many AWS services such as [AWS Lambda](https://aws.amazon.com/lambda/).
       * [Auto updates and crash reporting](#auto_updates_and_crash_reporting)
   * [Command line reference](#command_line_reference)
   * [Customizing Lambda Linux VirtualBox flavor](#customizing_lambda_linux_virtualbox_flavor)
-  * [A note about VirtualBox shared folder support](#a_note_about_virtualbox_shared_folder_support)
+  * [VirtualBox shared folder support](#virtualbox_shared_folder_support)
 
 -----------------------------------------
 
@@ -136,7 +136,7 @@ Docker client from your local container host, you can `lambda-machine-local ssh
 <LOCAL_VIRTUAL_MACHINE_NAME>` and run `docker` command from there.
 
 ```console
-$ lambda-machine-local ssh default
+$ lambda-machine-local ssh ll-default
 
 [ll-user@ip-192-168-99-100 ~]$ docker info
 ```
@@ -150,7 +150,7 @@ Depending on your container workflow, please consider installing
 via `yum install ...`
 
 ```console
-$ lambda-machine-local ssh default
+$ lambda-machine-local ssh ll-default
 
 [ll-user@ip-192-168-99-100 ~]$ sudo yum install -y aws-cli
 ```
@@ -197,34 +197,34 @@ example &ndash;
 ```console
 username@DESKTOP-xxxxxxx MINGW64 ~
 $ lambda-machine-local ls
-NAME      ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
-default   -        virtualbox   Running   tcp://192.168.99.100:2376   v1.12.6
+NAME         ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
+ll-default   -        virtualbox   Running   tcp://192.168.99.100:2376   v1.12.6
 
 username@DESKTOP-xxxxxxx MINGW64 ~
-$ lambda-machine-local rm -y default
-About to remove default
+$ lambda-machine-local rm -y ll-default
+About to remove ll-default
 WARNING: This action will delete both local reference and remote instance.
-Can't remove "default"
+Can't remove "ll-default"
 
 username@DESKTOP-xxxxxxx MINGW64 ~
 $ lambda-machine-local ls
-NAME      ACTIVE   DRIVER      STATE   URL   DOCKER   ERRORS
-default            not found   Error                  open C:\Users\username\.docker\lambda-machine-local\
-machines\default\config.json: The system cannot find the file specified.
+NAME         ACTIVE   DRIVER      STATE   URL   DOCKER   ERRORS
+ll-default            not found   Error                  open C:\Users\username\.docker\lambda-machine-local\
+machines\ll-default\config.json: The system cannot find the file specified.
 ```
 
 If you encounter this issue, you can use [`lambda-machine-local rm`](#cli_rm)
-with `--force` (`-f`) flag to remove the `default` directory and correct the
+with `--force` (`-f`) flag to remove the `ll-default` directory and correct the
 error.
 
 ```console
 username@DESKTOP-xxxxxxx MINGW64 ~
-$ lambda-machine-local rm -f default
-About to remove default
+$ lambda-machine-local rm -f ll-default
+About to remove ll-default
 WARNING: This action will delete both local reference and remote instance.
-Error removing host "default": open C:\Users\username\.docker\lambda-machine-local\machines\default\config.json:
+Error removing host "ll-default": open C:\Users\username\.docker\lambda-machine-local\machines\ll-default\config.json:
 The system cannot find the file specified.
-Successfully removed default
+Successfully removed ll-default
 
 username@DESKTOP-xxxxxxx MINGW64 ~
 $ lambda-machine-local ls
@@ -1512,8 +1512,8 @@ options to your docker daemon, you can edit these files.
 0 directories, 3 files
 ```
 
-<a name="a_note_about_virtualbox_shared_folder_support"></a>
-## A note about VirtualBox shared folder support
+<a name="virtualbox_shared_folder_support"></a>
+## VirtualBox shared folder support
 
 VirtualBox is a widely used, stable and
 mature
