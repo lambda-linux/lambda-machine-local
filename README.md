@@ -64,6 +64,7 @@ If you don't have a preferred operating system for your container images, we
 recommend that you consider Amazon Linux. It is a proven operating system and is
 used by many AWS services such as [AWS Lambda](https://aws.amazon.com/lambda/).
 
+<a name="toc"></a>
 -----------------------------------------
 
 **Related resources**:
