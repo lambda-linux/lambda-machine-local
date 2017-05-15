@@ -36,7 +36,6 @@ var (
 		"Name":          "NAME",
 		"Active":        "ACTIVE",
 		"ActiveHost":    "ACTIVE_HOST",
-		"ActiveSwarm":   "ACTIVE_SWARM",
 		"DriverName":    "DRIVER",
 		"State":         "STATE",
 		"URL":           "URL",
@@ -53,7 +52,6 @@ type HostListItem struct {
 	Name          string
 	Active        string
 	ActiveHost    bool
-	ActiveSwarm   bool
 	DriverName    string
 	State         state.State
 	URL           string
@@ -349,28 +347,16 @@ func attemptGetHostState(h *host.Host, stateQueryChan chan<- HostListItem) {
 		engineOptions = h.HostOptions.EngineOptions
 	}
 
-	isMaster := false
-	swarmHost := ""
-	if swarmOptions != nil {
-		isMaster = swarmOptions.Master
-		swarmHost = swarmOptions.Host
-	}
-
 	activeHost := isActive(currentState, url)
-	activeSwarm := isSwarmActive(currentState, url, isMaster, swarmHost)
 	active := "-"
 	if activeHost {
 		active = "*"
-	}
-	if activeSwarm {
-		active = "* (swarm)"
 	}
 
 	stateQueryChan <- HostListItem{
 		Name:          h.Name,
 		Active:        active,
 		ActiveHost:    activeHost,
-		ActiveSwarm:   activeSwarm,
 		DriverName:    h.Driver.DriverName(),
 		State:         currentState,
 		URL:           url,
@@ -457,17 +443,7 @@ func isActive(currentState state.State, hostURL string) bool {
 	return currentState == state.Running && hostURL == os.Getenv("DOCKER_HOST")
 }
 
-func isSwarmActive(currentState state.State, hostURL string, isMaster bool, swarmHost string) bool {
-	return isMaster && currentState == state.Running && toSwarmURL(hostURL, swarmHost) == os.Getenv("DOCKER_HOST")
-}
-
 func urlPort(urlWithPort string) string {
 	parts := strings.Split(urlWithPort, ":")
 	return parts[len(parts)-1]
-}
-
-func toSwarmURL(hostURL string, swarmHost string) string {
-	hostPort := urlPort(hostURL)
-	swarmPort := urlPort(swarmHost)
-	return strings.Replace(hostURL, ":"+hostPort, ":"+swarmPort, 1)
 }
