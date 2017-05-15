@@ -23,12 +23,6 @@ EOF
 `
 )
 
-func init() {
-	Register("CoreOS", &RegisteredProvisioner{
-		New: NewCoreOSProvisioner,
-	})
-}
-
 func NewCoreOSProvisioner(d drivers.Driver) Provisioner {
 	return &CoreOSProvisioner{
 		NewSystemdProvisioner("coreos", d),

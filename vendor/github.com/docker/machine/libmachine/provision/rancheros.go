@@ -30,12 +30,6 @@ EOF
 `
 )
 
-func init() {
-	Register("RancherOS", &RegisteredProvisioner{
-		New: NewRancherProvisioner,
-	})
-}
-
 func NewRancherProvisioner(d drivers.Driver) Provisioner {
 	return &RancherProvisioner{
 		GenericProvisioner{

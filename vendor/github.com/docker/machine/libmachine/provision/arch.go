@@ -13,12 +13,6 @@ import (
 	"github.com/docker/machine/libmachine/swarm"
 )
 
-func init() {
-	Register("Arch", &RegisteredProvisioner{
-		New: NewArchProvisioner,
-	})
-}
-
 func NewArchProvisioner(d drivers.Driver) Provisioner {
 	return &ArchProvisioner{
 		NewSystemdProvisioner("arch", d),
