@@ -13,18 +13,12 @@ import (
 	"github.com/docker/machine/libmachine/host"
 	"github.com/docker/machine/libmachine/mcndockerclient"
 	"github.com/docker/machine/libmachine/state"
-	"github.com/docker/machine/libmachine/swarm"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestParseFiltersErrorsGivenInvalidFilter(t *testing.T) {
 	_, err := parseFilters([]string{"foo=bar"})
 	assert.EqualError(t, err, "Unsupported filter key 'foo'")
-}
-
-func TestParseFiltersSwarm(t *testing.T) {
-	actual, _ := parseFilters([]string{"swarm=foo"})
-	assert.Equal(t, actual, FilterOptions{SwarmName: []string{"foo"}})
 }
 
 func TestParseFiltersDriver(t *testing.T) {
@@ -49,19 +43,19 @@ func TestParseFiltersLabel(t *testing.T) {
 }
 
 func TestParseFiltersAll(t *testing.T) {
-	actual, _ := parseFilters([]string{"swarm=foo", "driver=bar", "state=Stopped", "name=dev"})
-	assert.Equal(t, actual, FilterOptions{SwarmName: []string{"foo"}, DriverName: []string{"bar"}, State: []string{"Stopped"}, Name: []string{"dev"}})
+	actual, _ := parseFilters([]string{"driver=bar", "state=Stopped", "name=dev"})
+	assert.Equal(t, actual, FilterOptions{DriverName: []string{"bar"}, State: []string{"Stopped"}, Name: []string{"dev"}})
 }
 
 func TestParseFiltersAllCase(t *testing.T) {
-	actual, err := parseFilters([]string{"sWarM=foo", "DrIver=bar", "StaTe=Stopped", "NAMe=dev", "LABEL=com=foo"})
-	assert.Equal(t, actual, FilterOptions{SwarmName: []string{"foo"}, DriverName: []string{"bar"}, State: []string{"Stopped"}, Name: []string{"dev"}, Labels: []string{"com=foo"}})
+	actual, err := parseFilters([]string{"DrIver=bar", "StaTe=Stopped", "NAMe=dev", "LABEL=com=foo"})
+	assert.Equal(t, actual, FilterOptions{DriverName: []string{"bar"}, State: []string{"Stopped"}, Name: []string{"dev"}, Labels: []string{"com=foo"}})
 	assert.Nil(t, err, "err should be nil")
 }
 
 func TestParseFiltersDuplicates(t *testing.T) {
-	actual, _ := parseFilters([]string{"swarm=foo", "driver=bar", "name=mark", "swarm=baz", "driver=qux", "state=Running", "state=Starting", "name=time"})
-	assert.Equal(t, actual, FilterOptions{SwarmName: []string{"foo", "baz"}, DriverName: []string{"bar", "qux"}, State: []string{"Running", "Starting"}, Name: []string{"mark", "time"}})
+	actual, _ := parseFilters([]string{"driver=bar", "name=mark", "driver=qux", "state=Running", "state=Starting", "name=time"})
+	assert.Equal(t, actual, FilterOptions{DriverName: []string{"bar", "qux"}, State: []string{"Running", "Starting"}, Name: []string{"mark", "time"}})
 }
 
 func TestParseFiltersValueWithEqual(t *testing.T) {
@@ -71,7 +65,6 @@ func TestParseFiltersValueWithEqual(t *testing.T) {
 
 func TestFilterHostsReturnsFiltersValuesCaseInsensitive(t *testing.T) {
 	opts := FilterOptions{
-		SwarmName:  []string{"fOo"},
 		DriverName: []string{"ViRtUaLboX"},
 		State:      []string{"StOPpeD"},
 		Labels:     []string{"com.EXAMPLE.app=FOO"},
@@ -113,7 +106,7 @@ func TestFilterHostsReturnSetLabel(t *testing.T) {
 
 func TestFilterHostsReturnsEmptyGivenEmptyHosts(t *testing.T) {
 	opts := FilterOptions{
-		SwarmName: []string{"foo"},
+		Name: []string{"foo"},
 	}
 	hosts := []*host.Host{}
 	assert.Empty(t, filterHosts(hosts, opts))
@@ -121,46 +114,16 @@ func TestFilterHostsReturnsEmptyGivenEmptyHosts(t *testing.T) {
 
 func TestFilterHostsReturnsEmptyGivenNonMatchingFilters(t *testing.T) {
 	opts := FilterOptions{
-		SwarmName: []string{"foo"},
+		Name: []string{"foo"},
 	}
 	hosts := []*host.Host{
 		{
 			Name:       "testhost",
 			DriverName: "fakedriver",
+			Driver:     &fakedriver.Driver{MockState: state.Paused, MockName: "testhost"},
 		},
 	}
 	assert.Empty(t, filterHosts(hosts, opts))
-}
-
-func TestFilterHostsBySwarmName(t *testing.T) {
-	opts := FilterOptions{
-		SwarmName: []string{"master"},
-	}
-	master :=
-		&host.Host{
-			Name: "master",
-			HostOptions: &host.Options{
-				SwarmOptions: &swarm.Options{Master: true, Discovery: "foo"},
-			},
-		}
-	node1 :=
-		&host.Host{
-			Name: "node1",
-			HostOptions: &host.Options{
-				SwarmOptions: &swarm.Options{Master: false, Discovery: "foo"},
-			},
-		}
-	othermaster :=
-		&host.Host{
-			Name: "othermaster",
-			HostOptions: &host.Options{
-				SwarmOptions: &swarm.Options{Master: true, Discovery: "bar"},
-			},
-		}
-	hosts := []*host.Host{master, node1, othermaster}
-	expected := []*host.Host{master, node1}
-
-	assert.EqualValues(t, filterHosts(hosts, opts), expected)
 }
 
 func TestFilterHostsByDriverName(t *testing.T) {
@@ -252,7 +215,7 @@ func TestFilterHostsByName(t *testing.T) {
 
 func TestFilterHostsMultiFlags(t *testing.T) {
 	opts := FilterOptions{
-		SwarmName:  []string{},
+		Name:       []string{},
 		DriverName: []string{"fakedriver", "virtualbox"},
 	}
 	node1 :=
@@ -429,33 +392,6 @@ func TestIsActive(t *testing.T) {
 	}
 }
 
-func TestIsSwarmActive(t *testing.T) {
-	cases := []struct {
-		dockerHost string
-		state      state.State
-		isMaster   bool
-		expected   bool
-	}{
-		{"", state.Running, false, false},
-		{"tcp://5.6.7.8:3376", state.Running, true, false},
-		{"tcp://1.2.3.4:3376", state.Stopped, true, false},
-		{"tcp://1.2.3.4:3376", state.Running, true, true},
-		{"tcp://1.2.3.4:3376", state.Running, false, false},
-		{"tcp://1.2.3.4:2376", state.Running, true, false},
-	}
-
-	for _, c := range cases {
-		os.Unsetenv("DOCKER_HOST")
-		if c.dockerHost != "" {
-			os.Setenv("DOCKER_HOST", c.dockerHost)
-		}
-
-		actual := isSwarmActive(c.state, "tcp://1.2.3.4:2376", c.isMaster, "tcp://0.0.0.0:3376")
-
-		assert.Equal(t, c.expected, actual)
-	}
-}
-
 func TestGetHostStateTimeout(t *testing.T) {
 	hosts := []*host.Host{
 		{
@@ -491,7 +427,6 @@ func TestGetHostStateError(t *testing.T) {
 	assert.Equal(t, "Driver", hostItem.DriverName)
 	assert.Empty(t, hostItem.URL)
 	assert.Equal(t, "Unable to get ip", hostItem.Error)
-	assert.Nil(t, hostItem.SwarmOptions)
 }
 
 func TestGetSomeHostInError(t *testing.T) {
@@ -519,7 +454,6 @@ func TestGetSomeHostInError(t *testing.T) {
 	assert.Equal(t, "not found", hostItem.DriverName)
 	assert.Empty(t, hostItem.URL)
 	assert.Equal(t, "invalid memory address or nil pointer dereference", hostItem.Error)
-	assert.Nil(t, hostItem.SwarmOptions)
 
 	hostItem = hostItems[1]
 	assert.Equal(t, "foo", hostItem.Name)
