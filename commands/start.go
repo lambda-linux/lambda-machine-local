@@ -10,7 +10,7 @@ func cmdStart(c CommandLine, api libmachine.API) error {
 		return err
 	}
 
-	log.Info("Started machines may have new IP addresses. You may need to re-run the `docker-machine env` command.")
+	log.Info("Started machines may have new IP addresses. You may need to re-run the `lambda-machine-local env` command.")
 
 	return nil
 }
