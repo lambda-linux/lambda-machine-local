@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"sort"
 	"strings"
 
@@ -57,10 +56,6 @@ func cmdCreateInner(c CommandLine, api libmachine.API) error {
 	validName := host.ValidateHostName(name)
 	if !validName {
 		return fmt.Errorf("Error creating machine: %s", mcnerror.ErrInvalidHostname)
-	}
-
-	if err := validateSwarmDiscovery(c.String("swarm-discovery")); err != nil {
-		return fmt.Errorf("Error parsing swarm discovery: %s", err)
 	}
 
 	// TODO: Fix hacky JSON solution
@@ -330,23 +325,6 @@ func addDriverFlagsToCommand(cliFlags []cli.Flag, cmd *cli.Command) *cli.Command
 	sort.Sort(ByFlagName(cmd.Flags))
 
 	return cmd
-}
-
-func validateSwarmDiscovery(discovery string) error {
-	if discovery == "" {
-		return nil
-	}
-
-	matched, err := regexp.MatchString(`[^:]*://.*`, discovery)
-	if err != nil {
-		return err
-	}
-
-	if matched {
-		return nil
-	}
-
-	return fmt.Errorf("Swarm Discovery URL was in the wrong format: %s", discovery)
 }
 
 func tlsPath(c CommandLine, flag string, defaultName string) string {
