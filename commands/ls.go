@@ -218,19 +218,6 @@ func filterHosts(hosts []*host.Host, filters FilterOptions) []*host.Host {
 	return filteredHosts
 }
 
-func getSwarmMasters(hosts []*host.Host) map[string]string {
-	swarmMasters := make(map[string]string)
-	for _, h := range hosts {
-		if h.HostOptions != nil {
-			swarmOptions := h.HostOptions.SwarmOptions
-			if swarmOptions != nil && swarmOptions.Master {
-				swarmMasters[swarmOptions.Discovery] = h.Name
-			}
-		}
-	}
-	return swarmMasters
-}
-
 func filterHost(host *host.Host, filters FilterOptions) bool {
 	driverMatches := matchesDriverName(host, filters.DriverName)
 	stateMatches := matchesState(host, filters.State)
@@ -238,20 +225,6 @@ func filterHost(host *host.Host, filters FilterOptions) bool {
 	labelMatches := matchesLabel(host, filters.Labels)
 
 	return driverMatches && stateMatches && nameMatches && labelMatches
-}
-
-func matchesSwarmName(host *host.Host, swarmNames []string, swarmMasters map[string]string) bool {
-	if len(swarmNames) == 0 {
-		return true
-	}
-	for _, n := range swarmNames {
-		if host.HostOptions != nil && host.HostOptions.SwarmOptions != nil {
-			if strings.EqualFold(n, swarmMasters[host.HostOptions.SwarmOptions.Discovery]) {
-				return true
-			}
-		}
-	}
-	return false
 }
 
 func matchesDriverName(host *host.Host, driverNames []string) bool {
