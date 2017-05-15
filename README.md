@@ -603,9 +603,9 @@ For example &ndash;
 ```console
 $ lambda-machine-local config dev
 --tlsverify
---tlscacert="/Users/username/.docker/machine/machines/dev/ca.pem"
---tlscert="/Users/username/.docker/machine/machines/dev/cert.pem"
---tlskey="/Users/username/.docker/machine/machines/dev/key.pem"
+--tlscacert="/Users/username/.docker/lambda-machine-local/machines/dev/ca.pem"
+--tlscert="/Users/username/.docker/lambda-machine-local/machines/dev/cert.pem"
+--tlskey="/Users/username/.docker/lambda-machine-local/machines/dev/key.pem"
 -H=tcp://192.168.99.100:2376
 ```
 
