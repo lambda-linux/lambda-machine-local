@@ -60,8 +60,9 @@ func cmdCreateInner(c CommandLine, api libmachine.API) error {
 
 	// TODO: Fix hacky JSON solution
 	rawDriver, err := json.Marshal(&drivers.BaseDriver{
-		MachineName: name,
-		StorePath:   c.GlobalString("storage-path"),
+		MachineName:    name,
+		StorePath:      c.GlobalString("storage-path"),
+		GithubAPIToken: c.GlobalString("github-api-token"),
 	})
 	if err != nil {
 		return fmt.Errorf("Error attempting to marshal bare driver data: %s", err)
