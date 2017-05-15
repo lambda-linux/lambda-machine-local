@@ -111,7 +111,7 @@ following on-screen instructions to complete environment setup, you can run
 `docker ps`, `docker run --rm amazonlinux echo hello world`, and so forth.
 
 <a name="components"></a>
-Following components are used by Lambda Machine Local.
+Following are the list of components supported by Lambda Machine Local.
 
 | Component        | Why is it included? / Remarks |
 | ---------------- | ------------------- |
@@ -119,6 +119,7 @@ Following components are used by Lambda Machine Local.
 | Linux Kernel | LTS version [4.9.20](https://cdn.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.9.20) |
 | Docker Engine | Version [1.12.6](https://github.com/docker/docker/releases/tag/v1.12.6) |
 | Storage Driver| Device mapper in [direct-lvm](https://docs.docker.com/v1.12/engine/userguide/storagedriver/device-mapper-driver/#/configure-direct-lvm-mode-for-production) mode |
+| Serverless | AWS Serverless Application Model ([AWS SAM](http://docs.aws.amazon.com/lambda/latest/dg/deploying-lambda-apps.html)) and AWS CloudFormation using AWS [CLI](https://aws.amazon.com/cli/) |
 | Orchestration | Amazon ECS [CLI](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI.html) and Docker Compose version [1](https://docs.docker.com/compose/compose-file/compose-file-v1/) and [2](https://docs.docker.com/compose/compose-file/compose-file-v2/) is supported. There is no Docker Swarm support in Lambda Machine Local. |
 | VirtualBox Guest Additions | Version [5.1.20](http://download.virtualbox.org/virtualbox/5.1.10/) is included for shared filesystem support |
 | Libmachine | Lambda Machine Local uses libmachine version [0.11.0](https://github.com/docker/machine/tree/v0.10.0/libmachine) to manage local container host OS |
