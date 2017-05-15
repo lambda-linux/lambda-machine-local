@@ -15,6 +15,8 @@ import (
 )
 
 func TestCmdProvision(t *testing.T) {
+	t.Skip("skipping test; temporarily disable TestCmdProvision")
+
 	testCases := []struct {
 		commandLine CommandLine
 		api         libmachine.API
