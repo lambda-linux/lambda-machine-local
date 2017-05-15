@@ -1,6 +1,8 @@
-hash: 53b50fc0b6e4fb7755b19c228e991b16a4a178349075aab047636a62632fe6fd
-updated: 2017-04-28T03:17:03.543844611Z
+hash: 7ca1d2e5a20179ab4d3f6f3924fcdb294c4a9e38379cad4e22a3d9cb7d42d70d
+updated: 2017-04-28T03:21:43.101684964Z
 imports:
+- name: github.com/codegangsta/cli
+  version: 0302d3914d2a6ad61404584cdae6e6dbc9c03599
 - name: github.com/docker/machine
   version: 5b274558ea6ca822c06dd407a4e774a0105c3f60
 testImports:
