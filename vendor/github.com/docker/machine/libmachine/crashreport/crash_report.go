@@ -18,7 +18,7 @@ import (
 	"github.com/bugsnag/bugsnag-go"
 	"github.com/docker/machine/libmachine/log"
 	"github.com/docker/machine/libmachine/shell"
-	"github.com/docker/machine/version"
+	"github.com/lambda-linux/lambda-machine-local/version"
 )
 
 const (
