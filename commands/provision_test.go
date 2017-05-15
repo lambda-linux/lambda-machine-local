@@ -3,8 +3,6 @@ package commands
 import (
 	"testing"
 
-	"github.com/docker/machine/commands/commandstest"
-	"github.com/docker/machine/drivers/fakedriver"
 	"github.com/docker/machine/libmachine"
 	"github.com/docker/machine/libmachine/auth"
 	"github.com/docker/machine/libmachine/engine"
@@ -12,6 +10,8 @@ import (
 	"github.com/docker/machine/libmachine/libmachinetest"
 	"github.com/docker/machine/libmachine/provision"
 	"github.com/docker/machine/libmachine/swarm"
+	"github.com/lambda-linux/lambda-machine-local/commands/commandstest"
+	"github.com/lambda-linux/lambda-machine-local/drivers/fakedriver"
 	"github.com/stretchr/testify/assert"
 )
 
