@@ -46,7 +46,7 @@ func cmdActive(c CommandLine, api libmachine.API) error {
 func activeHost(items []HostListItem) (HostListItem, error) {
 	timeout := false
 	for _, item := range items {
-		if item.ActiveHost || item.ActiveSwarm {
+		if item.ActiveHost {
 			return item, nil
 		}
 		if item.State == state.Timeout {
