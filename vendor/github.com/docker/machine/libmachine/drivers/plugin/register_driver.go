@@ -21,9 +21,9 @@ var (
 
 func RegisterDriver(d drivers.Driver) {
 	if os.Getenv(localbinary.PluginEnvKey) != localbinary.PluginEnvVal {
-		fmt.Fprintf(os.Stderr, `This is a Docker Machine plugin binary.
+		fmt.Fprintf(os.Stderr, `This is a Lambda Machine Local plugin binary.
 Plugin binaries are not intended to be invoked directly.
-Please use this plugin through the main 'docker-machine' binary.
+Please use this plugin through the main 'lambda-machine-local' binary.
 (API version: %d)
 `, version.APIVersion)
 		os.Exit(1)
