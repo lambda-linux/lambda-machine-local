@@ -111,7 +111,7 @@ following on-screen instructions to complete environment setup, you can run
 `docker ps`, `docker run --rm amazonlinux echo hello world`, and so forth.
 
 <a name="components"></a>
-Following are the list of components supported by Lambda Machine Local.
+Following is the list of components supported by Lambda Machine Local.
 
 | Component        | Why is it included? / Remarks |
 | ---------------- | ------------------- |
@@ -273,7 +273,7 @@ Lambda Machine Local container virtual machines. In the following example we are
 using the prefixes `b2d-` and `ll-`.
 
 ```console
-$ machine create b2d-default
+$ docker-machine create b2d-default
 
 $ lambda-machine-local create ll-default
 ```
