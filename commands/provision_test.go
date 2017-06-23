@@ -9,7 +9,6 @@ import (
 	"github.com/docker/machine/libmachine/host"
 	"github.com/docker/machine/libmachine/libmachinetest"
 	"github.com/docker/machine/libmachine/provision"
-	"github.com/docker/machine/libmachine/swarm"
 	"github.com/lambda-linux/lambda-machine-local/commands/commandstest"
 	"github.com/lambda-linux/lambda-machine-local/drivers/fakedriver"
 	"github.com/stretchr/testify/assert"
@@ -33,7 +32,6 @@ func TestCmdProvision(t *testing.T) {
 						HostOptions: &host.Options{
 							EngineOptions: &engine.Options{},
 							AuthOptions:   &auth.Options{},
-							SwarmOptions:  &swarm.Options{},
 						},
 					},
 					{
@@ -42,7 +40,6 @@ func TestCmdProvision(t *testing.T) {
 						HostOptions: &host.Options{
 							EngineOptions: &engine.Options{},
 							AuthOptions:   &auth.Options{},
-							SwarmOptions:  &swarm.Options{},
 						},
 					},
 				},
