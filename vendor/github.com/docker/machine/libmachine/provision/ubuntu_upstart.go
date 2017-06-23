@@ -14,12 +14,6 @@ import (
 	"github.com/docker/machine/libmachine/swarm"
 )
 
-func init() {
-	Register("Ubuntu-UpStart", &RegisteredProvisioner{
-		New: NewUbuntuProvisioner,
-	})
-}
-
 func NewUbuntuProvisioner(d drivers.Driver) Provisioner {
 	return &UbuntuProvisioner{
 		GenericProvisioner{
