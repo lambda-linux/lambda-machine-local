@@ -4,25 +4,10 @@ import (
 	"testing"
 
 	"flag"
-	"github.com/docker/machine/commands/commandstest"
 	"github.com/docker/machine/libmachine/mcnflag"
+	"github.com/lambda-linux/lambda-machine-local/commands/commandstest"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestValidateSwarmDiscoveryErrorsGivenInvalidURL(t *testing.T) {
-	err := validateSwarmDiscovery("foo")
-	assert.Error(t, err)
-}
-
-func TestValidateSwarmDiscoveryAcceptsEmptyString(t *testing.T) {
-	err := validateSwarmDiscovery("")
-	assert.NoError(t, err)
-}
-
-func TestValidateSwarmDiscoveryAcceptsValidFormat(t *testing.T) {
-	err := validateSwarmDiscovery("token://deadbeefcafe")
-	assert.NoError(t, err)
-}
 
 type fakeFlagGetter struct {
 	flag.Value
