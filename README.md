@@ -117,7 +117,7 @@ Following is the list of components supported by Lambda Machine Local.
 | ---------------- | ------------------- |
 | Container OS | [Lambda Linux VirtualBox Flavor](https://github.com/lambda-linux/lambda-linux-vbox) is used as the container host OS. Lambda Linux is based on [Amazon Linux](https://aws.amazon.com/amazon-linux-ami/), the Linux operating system that powers [AWS](https://aws.amazon.com/) |
 | Linux Kernel | LTS version [4.9.27](https://cdn.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.9.27) |
-| Docker Engine | Version [1.12.6](https://github.com/docker/docker/releases/tag/v1.12.6) |
+| Docker Engine | Version [17.03.1-ce](https://github.com/moby/moby/releases/tag/v17.03.1-ce) |
 | Storage Driver| Device mapper in [direct-lvm](https://docs.docker.com/v1.12/engine/userguide/storagedriver/device-mapper-driver/#/configure-direct-lvm-mode-for-production) mode |
 | Serverless | AWS Serverless Application Model ([AWS SAM](http://docs.aws.amazon.com/lambda/latest/dg/deploying-lambda-apps.html)) and AWS CloudFormation using AWS [CLI](https://aws.amazon.com/cli/) |
 | Orchestration | Amazon ECS [CLI](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI.html) and Docker Compose version [1](https://docs.docker.com/compose/compose-file/compose-file-v1/) and [2](https://docs.docker.com/compose/compose-file/compose-file-v2/) is supported. There is no Docker Swarm support in Lambda Machine Local. |
