@@ -84,7 +84,7 @@ func shellCfgSet(c CommandLine, api libmachine.API) (*ShellConfig, error) {
 		return nil, err
 	}
 
-	dockerHost, _, err := check.DefaultConnChecker.Check(host, c.Bool("swarm"))
+	dockerHost, _, err := check.DefaultConnChecker.Check(host, false)
 	if err != nil {
 		return nil, fmt.Errorf("Error checking TLS connection: %s", err)
 	}
