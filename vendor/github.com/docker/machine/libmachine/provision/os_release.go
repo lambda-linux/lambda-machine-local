@@ -29,6 +29,7 @@ type OsRelease struct {
 	HomeURL      string `osr:"HOME_URL"`
 	SupportURL   string `osr:"SUPPORT_URL"`
 	BugReportURL string `osr:"BUG_REPORT_URL"`
+	CPEName      string `osr:"CPE_NAME"` // Amazon Linux and Lambda Linux
 }
 
 func stripQuotes(val string) string {
