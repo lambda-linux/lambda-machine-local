@@ -461,6 +461,8 @@ func NewB2dUtils(storePath string) *B2dUtils {
 
 // DownloadISO downloads boot2docker ISO image for the given tag and save it at dest.
 func (b *B2dUtils) DownloadISO(dir, file, isoURL string) error {
+	log.Infof("We will now attempt to automatically download the latest release. This can take some time depending on the speed of your internet connection")
+	log.Infof("You can also download the latest lambda-linux-vbox.iso from https://github.com/lambda-linux/lambda-linux-vbox/releases and copy it to %s", b.path())
 	log.Infof("Downloading %s from %s...", b.path(), isoURL)
 	return b.download(dir, file, isoURL)
 }
@@ -481,10 +483,12 @@ func (r *ReaderWithProgress) Read(p []byte) (int, error) {
 		percentage := r.bytesTransferred * 100 / r.expectedLength
 
 		for percentage >= r.nextPercentToPrint {
-			if r.nextPercentToPrint%10 == 0 {
-				fmt.Fprintf(r.out, "%d%%", r.nextPercentToPrint)
-			} else if r.nextPercentToPrint%2 == 0 {
-				fmt.Fprint(r.out, ".")
+			if r.nextPercentToPrint%10 == 0 && r.nextPercentToPrint != 0 {
+				if r.nextPercentToPrint == 100 {
+					fmt.Fprintf(r.out, "....%d%% (done) \n", r.nextPercentToPrint)
+				} else {
+					fmt.Fprintf(r.out, "....%d%%  (downloaded) \n", r.nextPercentToPrint)
+				}
 			}
 			r.nextPercentToPrint += 2
 		}
@@ -494,7 +498,6 @@ func (r *ReaderWithProgress) Read(p []byte) (int, error) {
 }
 
 func (r *ReaderWithProgress) Close() error {
-	fmt.Fprintln(r.out)
 	return r.ReadCloser.Close()
 }
 
