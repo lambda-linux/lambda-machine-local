@@ -67,7 +67,6 @@ type HostListItem struct {
 
 // FilterOptions -
 type FilterOptions struct {
-	SwarmName  []string
 	DriverName []string
 	State      []string
 	Name       []string
@@ -186,8 +185,6 @@ func parseFilters(filters []string) (FilterOptions, error) {
 		key, value := strings.ToLower(kv[0]), kv[1]
 
 		switch key {
-		case "swarm":
-			options.SwarmName = append(options.SwarmName, value)
 		case "driver":
 			options.DriverName = append(options.DriverName, value)
 		case "state":
@@ -204,8 +201,7 @@ func parseFilters(filters []string) (FilterOptions, error) {
 }
 
 func filterHosts(hosts []*host.Host, filters FilterOptions) []*host.Host {
-	if len(filters.SwarmName) == 0 &&
-		len(filters.DriverName) == 0 &&
+	if len(filters.DriverName) == 0 &&
 		len(filters.State) == 0 &&
 		len(filters.Name) == 0 &&
 		len(filters.Labels) == 0 {
@@ -213,10 +209,9 @@ func filterHosts(hosts []*host.Host, filters FilterOptions) []*host.Host {
 	}
 
 	filteredHosts := []*host.Host{}
-	swarmMasters := getSwarmMasters(hosts)
 
 	for _, h := range hosts {
-		if filterHost(h, filters, swarmMasters) {
+		if filterHost(h, filters) {
 			filteredHosts = append(filteredHosts, h)
 		}
 	}
@@ -236,14 +231,13 @@ func getSwarmMasters(hosts []*host.Host) map[string]string {
 	return swarmMasters
 }
 
-func filterHost(host *host.Host, filters FilterOptions, swarmMasters map[string]string) bool {
-	swarmMatches := matchesSwarmName(host, filters.SwarmName, swarmMasters)
+func filterHost(host *host.Host, filters FilterOptions) bool {
 	driverMatches := matchesDriverName(host, filters.DriverName)
 	stateMatches := matchesState(host, filters.State)
 	nameMatches := matchesName(host, filters.Name)
 	labelMatches := matchesLabel(host, filters.Labels)
 
-	return swarmMatches && driverMatches && stateMatches && nameMatches && labelMatches
+	return driverMatches && stateMatches && nameMatches && labelMatches
 }
 
 func matchesSwarmName(host *host.Host, swarmNames []string, swarmMasters map[string]string) bool {
