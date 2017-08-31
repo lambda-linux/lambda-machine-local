@@ -25,7 +25,6 @@ import (
 	"github.com/docker/machine/libmachine/log"
 	"github.com/docker/machine/libmachine/mcnerror"
 	"github.com/docker/machine/libmachine/mcnflag"
-	"github.com/docker/machine/libmachine/swarm"
 	"github.com/lambda-linux/lambda-machine-local/commands/mcndirs"
 )
 
@@ -76,54 +75,6 @@ var (
 			Name:  "engine-env",
 			Usage: "Specify environment variables to set in the engine",
 			Value: &cli.StringSlice{},
-		},
-		cli.BoolFlag{
-			Name:  "swarm",
-			Usage: "Configure Machine to join a Swarm cluster",
-		},
-		cli.StringFlag{
-			Name:   "swarm-image",
-			Usage:  "Specify Docker image to use for Swarm",
-			Value:  "swarm:latest",
-			EnvVar: "MACHINE_SWARM_IMAGE",
-		},
-		cli.BoolFlag{
-			Name:  "swarm-master",
-			Usage: "Configure Machine to be a Swarm master",
-		},
-		cli.StringFlag{
-			Name:  "swarm-discovery",
-			Usage: "Discovery service to use with Swarm",
-			Value: "",
-		},
-		cli.StringFlag{
-			Name:  "swarm-strategy",
-			Usage: "Define a default scheduling strategy for Swarm",
-			Value: "spread",
-		},
-		cli.StringSliceFlag{
-			Name:  "swarm-opt",
-			Usage: "Define arbitrary flags for Swarm master",
-			Value: &cli.StringSlice{},
-		},
-		cli.StringSliceFlag{
-			Name:  "swarm-join-opt",
-			Usage: "Define arbitrary flags for Swarm join",
-			Value: &cli.StringSlice{},
-		},
-		cli.StringFlag{
-			Name:  "swarm-host",
-			Usage: "ip/socket to listen on for Swarm master",
-			Value: "tcp://0.0.0.0:3376",
-		},
-		cli.StringFlag{
-			Name:  "swarm-addr",
-			Usage: "addr to advertise for Swarm (default: detect and use the machine IP)",
-			Value: "",
-		},
-		cli.BoolFlag{
-			Name:  "swarm-experimental",
-			Usage: "Enable Swarm experimental features",
 		},
 		cli.StringSliceFlag{
 			Name:  "tls-san",
@@ -189,19 +140,6 @@ func cmdCreateInner(c CommandLine, api libmachine.API) error {
 			StorageDriver:    c.String("engine-storage-driver"),
 			TLSVerify:        true,
 			InstallURL:       c.String("engine-install-url"),
-		},
-		SwarmOptions: &swarm.Options{
-			IsSwarm:            c.Bool("swarm") || c.Bool("swarm-master"),
-			Image:              c.String("swarm-image"),
-			Agent:              c.Bool("swarm"),
-			Master:             c.Bool("swarm-master"),
-			Discovery:          c.String("swarm-discovery"),
-			Address:            c.String("swarm-addr"),
-			Host:               c.String("swarm-host"),
-			Strategy:           c.String("swarm-strategy"),
-			ArbitraryFlags:     c.StringSlice("swarm-opt"),
-			ArbitraryJoinFlags: c.StringSlice("swarm-join-opt"),
-			IsExperimental:     c.Bool("swarm-experimental"),
 		},
 	}
 
