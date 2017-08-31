@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	defaultAPIKey  = "a9697f9a010c33ee218a65e5b1f3b0c1"
+	defaultAPIKey  = "70122debb63ba0c5d475573bcfb8608c"
 	noreportAPIKey = "no-report"
 )
 
