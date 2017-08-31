@@ -21,8 +21,6 @@ func TestCmdKillMissingMachineName(t *testing.T) {
 }
 
 func TestCmdKill(t *testing.T) {
-	t.Skip("skipping test; temporarily disable TestCmdKill")
-
 	commandLine := &commandstest.FakeCommandLine{
 		CliArgs: []string{"machineToKill1", "machineToKill2"},
 	}
