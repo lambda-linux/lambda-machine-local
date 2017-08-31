@@ -123,7 +123,8 @@ func (h *Host) Start() error {
 
 	log.Infof("Machine %q was started.", h.Name)
 
-	return h.WaitForDocker()
+	// In lambda-machine-local, we provision everytime the machine is started
+	return h.Provision()
 }
 
 func (h *Host) Stop() error {
