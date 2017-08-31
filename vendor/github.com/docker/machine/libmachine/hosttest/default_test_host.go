@@ -5,7 +5,6 @@ import (
 	"github.com/docker/machine/libmachine/auth"
 	"github.com/docker/machine/libmachine/engine"
 	"github.com/docker/machine/libmachine/host"
-	"github.com/docker/machine/libmachine/swarm"
 	"github.com/docker/machine/libmachine/version"
 )
 
@@ -38,12 +37,8 @@ func (d DriverOptionsMock) Bool(key string) bool {
 func GetTestDriverFlags() *DriverOptionsMock {
 	flags := &DriverOptionsMock{
 		Data: map[string]interface{}{
-			"name":            DefaultHostName,
-			"url":             "unix:///var/run/docker.sock",
-			"swarm":           false,
-			"swarm-host":      "",
-			"swarm-master":    false,
-			"swarm-discovery": "",
+			"name": DefaultHostName,
+			"url":  "unix:///var/run/docker.sock",
 		},
 	}
 	return flags
@@ -52,7 +47,6 @@ func GetTestDriverFlags() *DriverOptionsMock {
 func GetDefaultTestHost() (*host.Host, error) {
 	hostOptions := &host.Options{
 		EngineOptions: &engine.Options{},
-		SwarmOptions:  &swarm.Options{},
 		AuthOptions: &auth.Options{
 			CaCertPath:       HostTestCaCert,
 			CaPrivateKeyPath: HostTestPrivateKey,
