@@ -1,10 +1,12 @@
-hash: 7ca1d2e5a20179ab4d3f6f3924fcdb294c4a9e38379cad4e22a3d9cb7d42d70d
-updated: 2017-04-28T03:21:43.101684964Z
+hash: e7e5b3c3816e4ac993570df002414a2f35c1751df6aa7eadfe14dc21f7d3a3d2
+updated: 2017-04-28T03:24:05.610901115Z
 imports:
 - name: github.com/codegangsta/cli
   version: 0302d3914d2a6ad61404584cdae6e6dbc9c03599
 - name: github.com/docker/machine
   version: 5b274558ea6ca822c06dd407a4e774a0105c3f60
+- name: github.com/skarademir/naturalsort
+  version: 69a5d87bef620f77ee8508db30c846b3b84b111e
 testImports:
 - name: github.com/stretchr/testify
   version: 1f4a1643a57e798696635ea4c126e9127adb7d3c
