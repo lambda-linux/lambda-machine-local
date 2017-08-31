@@ -86,6 +86,6 @@ func (d *BaseDriver) SetSwarmConfigFromFlags(flags DriverOptions) {
 }
 
 func EngineInstallURLFlagSet(flags DriverOptions) bool {
-	engineInstallURLFlag := flags.String("engine-install-url")
+	engineInstallURLFlag := ""
 	return engineInstallURLFlag != DefaultEngineInstallURL && engineInstallURLFlag != ""
 }
