@@ -146,6 +146,63 @@ func (*b2dReleaseGetter) getReleaseTag(apiURL string) (string, error) {
 	return t.TagName, nil
 }
 
+// getReleaseID gets the release ID of lambda-linux-vbox from apiURL.
+func (*b2dReleaseGetter) getReleaseID(apiURL string) (string, error) {
+	if apiURL == "" {
+		apiURL = defaultURL
+	}
+
+	if !version.RC() {
+		// Just go straight to the convenience URL for "/latest" if we
+		// are a non-release candidate version.  "/latest" won't return
+		// non-RCs, so that's what we use for stable releases of
+		// Machine.
+		apiURL = apiURL + "/latest"
+	}
+
+	client := getClient()
+	req, err := getRequest(apiURL)
+	if err != nil {
+		return "", err
+	}
+	rsp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer rsp.Body.Close()
+
+	// If we call the API endpoint
+	// "/repos/boot2docker/boot2docker/releases" without specifying
+	// "/latest", we will receive a list of releases instead of a single
+	// one, and we should decode accordingly.
+	if version.RC() {
+		var ids []struct {
+			ID int `json:"id"`
+		}
+		if err := json.NewDecoder(rsp.Body).Decode(&ids); err != nil {
+			return "", err
+		}
+		i := ids[0]
+		if i.ID == 0 {
+			return "", errGitHubAPIResponse
+		}
+		return fmt.Sprintf("%d", i.ID), nil
+	}
+
+	// Otherwise, we get back just one release, which we can decode to get
+	// the tag.
+	var i struct {
+		ID int `json:"id"`
+	}
+	if err := json.NewDecoder(rsp.Body).Decode(&i); err != nil {
+		return "", err
+	}
+	if i.ID == 0 {
+		return "", errGitHubAPIResponse
+	}
+	return fmt.Sprintf("%d", i.ID), nil
+}
+
 // getReleaseURL gets the latest release URL of Boot2Docker.
 func (b *b2dReleaseGetter) getReleaseURL(apiURL string) (string, error) {
 	if apiURL == "" {
