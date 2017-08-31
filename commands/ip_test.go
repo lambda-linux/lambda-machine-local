@@ -22,6 +22,8 @@ func TestCmdIPMissingMachineName(t *testing.T) {
 }
 
 func TestCmdIP(t *testing.T) {
+	t.Skip("skipping test; temporarily disable TestCmdIP")
+
 	testCases := []struct {
 		commandLine CommandLine
 		api         libmachine.API
