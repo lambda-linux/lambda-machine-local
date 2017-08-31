@@ -22,7 +22,7 @@ import (
 
 const (
 	defaultCPU                 = 1
-	defaultMemory              = 1024
+	defaultMemory              = 2048
 	defaultBoot2DockerURL      = ""
 	defaultBoot2DockerImportVM = ""
 	defaultHostOnlyCIDR        = "192.168.99.1/24"
@@ -125,16 +125,16 @@ func (d *Driver) GetCreateFlags() []mcnflag.Flag {
 			EnvVar: "VIRTUALBOX_DISK_SIZE",
 		},
 		mcnflag.StringFlag{
-			Name:   "virtualbox-boot2docker-url",
-			Usage:  "The URL of the boot2docker image. Defaults to the latest available version",
+			Name:   "virtualbox-lambda-linux-vbox-url",
+			Usage:  "The URL of the Lambda Linux VirtualBox image. Defaults to the latest available version",
 			Value:  defaultBoot2DockerURL,
-			EnvVar: "VIRTUALBOX_BOOT2DOCKER_URL",
+			EnvVar: "VIRTUALBOX_LAMBDA_LINUX_VBOX_URL",
 		},
 		mcnflag.StringFlag{
-			Name:   "virtualbox-import-boot2docker-vm",
-			Usage:  "The name of a Boot2Docker VM to import",
+			Name:   "virtualbox-import-lambda-linux-vbox-vm",
+			Usage:  "The name of a Lambda Linux VirtualBox VM to import",
 			Value:  defaultBoot2DockerImportVM,
-			EnvVar: "VIRTUALBOX_BOOT2DOCKER_IMPORT_VM",
+			EnvVar: "VIRTUALBOX_LAMBDA_LINUX_VBOX_IMPORT_VM",
 		},
 		mcnflag.BoolFlag{
 			Name:   "virtualbox-host-dns-resolver",
@@ -205,7 +205,7 @@ func (d *Driver) GetSSHHostname() (string, error) {
 
 func (d *Driver) GetSSHUsername() string {
 	if d.SSHUser == "" {
-		d.SSHUser = "docker"
+		d.SSHUser = "ll-user"
 	}
 
 	return d.SSHUser
@@ -229,15 +229,14 @@ func (d *Driver) GetURL() (string, error) {
 
 func (d *Driver) SetConfigFromFlags(flags drivers.DriverOptions) error {
 	if drivers.EngineInstallURLFlagSet(flags) {
-		return errors.New("--engine-install-url cannot be used with the virtualbox driver, use --virtualbox-boot2docker-url instead")
+		return errors.New("--engine-install-url cannot be used with the virtualbox driver, use --virtualbox-lambda-linux-vbox-url instead")
 	}
 	d.CPU = flags.Int("virtualbox-cpu-count")
 	d.Memory = flags.Int("virtualbox-memory")
 	d.DiskSize = flags.Int("virtualbox-disk-size")
-	d.Boot2DockerURL = flags.String("virtualbox-boot2docker-url")
-	d.SetSwarmConfigFromFlags(flags)
-	d.SSHUser = "docker"
-	d.Boot2DockerImportVM = flags.String("virtualbox-import-boot2docker-vm")
+	d.Boot2DockerURL = flags.String("virtualbox-lambda-linux-vbox-url")
+	d.SSHUser = "ll-user"
+	d.Boot2DockerImportVM = flags.String("virtualbox-import-lambda-linux-vbox-vm")
 	d.HostDNSResolver = flags.Bool("virtualbox-host-dns-resolver")
 	d.NatNicType = flags.String("virtualbox-nat-nictype")
 	d.HostOnlyCIDR = flags.String("virtualbox-hostonly-cidr")
@@ -260,6 +259,10 @@ func (d *Driver) PreCreateCheck() error {
 	if err != nil {
 		return err
 	}
+
+	// Set GithubAPIToken which can be used to set Authorization headers when
+	// communicating with Github
+	mcnutils.GithubAPIToken = d.GithubAPIToken
 
 	// Check that VBoxManage is of a supported version
 	if err = checkVBoxManageVersion(strings.TrimSpace(version)); err != nil {
@@ -336,7 +339,7 @@ func (d *Driver) CreateVM() error {
 		d.Memory = vmInfo.Memory
 
 		log.Debugf("Importing SSH key...")
-		keyPath := filepath.Join(mcnutils.GetHomeDir(), ".ssh", "id_boot2docker")
+		keyPath := filepath.Join(mcnutils.GetHomeDir(), ".ssh", "id_lambda_linux_vbox")
 		if err := mcnutils.CopyFile(keyPath, d.GetSSHKeyPath()); err != nil {
 			return err
 		}
@@ -423,7 +426,8 @@ func (d *Driver) CreateVM() error {
 	if err := d.vbm("storagectl", d.MachineName,
 		"--name", "SATA",
 		"--add", "sata",
-		"--hostiocache", "on"); err != nil {
+		"--hostiocache", "on",
+		"--portcount", "2"); err != nil {
 		return err
 	}
 
@@ -432,7 +436,7 @@ func (d *Driver) CreateVM() error {
 		"--port", "0",
 		"--device", "0",
 		"--type", "dvddrive",
-		"--medium", d.ResolveStorePath("boot2docker.iso")); err != nil {
+		"--medium", d.ResolveStorePath("lambda-linux-vbox.iso")); err != nil {
 		return err
 	}
 
@@ -789,7 +793,8 @@ func (d *Driver) GetIP() (string, error) {
 
 	log.Debugf("Host-only MAC: %s\n", macAddress)
 
-	output, err := drivers.RunSSHCommandFromDriver(d, "ip addr show")
+	// Provide full path for `ip`
+	output, err := drivers.RunSSHCommandFromDriver(d, "/sbin/ip addr show")
 	if err != nil {
 		return "", err
 	}
