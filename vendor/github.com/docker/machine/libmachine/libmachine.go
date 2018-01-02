@@ -7,7 +7,6 @@ import (
 
 	"github.com/docker/machine/drivers/errdriver"
 	"github.com/docker/machine/libmachine/auth"
-	"github.com/docker/machine/libmachine/check"
 	"github.com/docker/machine/libmachine/drivers"
 	"github.com/docker/machine/libmachine/drivers/plugin/localbinary"
 	"github.com/docker/machine/libmachine/drivers/rpc"
@@ -149,13 +148,6 @@ func (api *Client) performCreate(h *host.Host) error {
 		return fmt.Errorf("Error running provisioning: %s", err)
 	}
 
-	// We should check the connection to docker here
-	log.Info("Checking connection to Docker...")
-	if _, _, err = check.DefaultConnChecker.Check(h, false); err != nil {
-		return fmt.Errorf("Error checking the host: %s", err)
-	}
-
-	log.Info("Docker is up and running!")
 	return nil
 }
 
