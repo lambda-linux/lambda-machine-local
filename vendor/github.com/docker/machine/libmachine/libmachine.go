@@ -79,11 +79,6 @@ func (api *Client) NewHost(driverName string, rawDriver []byte) (*host.Host, err
 				StorageDriver: "aufs",
 				TLSVerify:     true,
 			},
-			SwarmOptions: &swarm.Options{
-				Host:     "tcp://0.0.0.0:3376",
-				Image:    "swarm:latest",
-				Strategy: "spread",
-			},
 		},
 	}, nil
 }
@@ -169,7 +164,9 @@ func (api *Client) performCreate(h *host.Host) error {
 	}
 
 	log.Infof("Provisioning with %s...", provisioner.String())
-	if err := provisioner.Provision(*h.HostOptions.SwarmOptions, *h.HostOptions.AuthOptions, *h.HostOptions.EngineOptions); err != nil {
+
+	// send fake SwarmOptions structure. On h its nil
+	if err := provisioner.Provision(swarm.Options{}, *h.HostOptions.AuthOptions, *h.HostOptions.EngineOptions); err != nil {
 		return fmt.Errorf("Error running provisioning: %s", err)
 	}
 
