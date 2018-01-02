@@ -151,8 +151,8 @@ VirtualBox.
 
 Additionally if you are looking to run Lambda Machine Local alongside Docker
 Machine, then please see
-this [link](#running_lambda_machine_local_alongside_docker_machine) for
-additional information.
+this [link](#running_lambda_machine_local_alongside_docker_machine) for further
+information.
 
 <a name="using_lambda_machine_local_to_run_containers"></a>
 ### Using Lambda Machine Local to run containers
