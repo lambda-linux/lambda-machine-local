@@ -8,27 +8,13 @@ import (
 	"path/filepath"
 
 	"github.com/codegangsta/cli"
-	"github.com/docker/machine/commands"
-	"github.com/docker/machine/commands/mcndirs"
-	"github.com/docker/machine/drivers/amazonec2"
-	"github.com/docker/machine/drivers/azure"
-	"github.com/docker/machine/drivers/digitalocean"
-	"github.com/docker/machine/drivers/exoscale"
-	"github.com/docker/machine/drivers/generic"
-	"github.com/docker/machine/drivers/google"
-	"github.com/docker/machine/drivers/hyperv"
-	"github.com/docker/machine/drivers/none"
-	"github.com/docker/machine/drivers/openstack"
-	"github.com/docker/machine/drivers/rackspace"
-	"github.com/docker/machine/drivers/softlayer"
-	"github.com/docker/machine/drivers/virtualbox"
-	"github.com/docker/machine/drivers/vmwarefusion"
-	"github.com/docker/machine/drivers/vmwarevcloudair"
-	"github.com/docker/machine/drivers/vmwarevsphere"
 	"github.com/docker/machine/libmachine/drivers/plugin"
 	"github.com/docker/machine/libmachine/drivers/plugin/localbinary"
 	"github.com/docker/machine/libmachine/log"
-	"github.com/docker/machine/version"
+	"github.com/lambda-linux/lambda-machine-local/commands"
+	"github.com/lambda-linux/lambda-machine-local/commands/mcndirs"
+	"github.com/lambda-linux/lambda-machine-local/drivers/virtualbox"
+	"github.com/lambda-linux/lambda-machine-local/version"
 )
 
 var AppHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [arg...]
@@ -50,7 +36,7 @@ Commands:
 Run '{{.Name}} COMMAND --help' for more information on a command.
 `
 
-var CommandHelpTemplate = `Usage: docker-machine {{.Name}}{{if .Flags}} [OPTIONS]{{end}} [arg...]
+var CommandHelpTemplate = `Usage: lambda-machine-local {{.Name}}{{if .Flags}} [OPTIONS]{{end}} [arg...]
 
 {{.Usage}}{{if .Description}}
 
@@ -96,15 +82,15 @@ func main() {
 	cli.CommandHelpTemplate = CommandHelpTemplate
 	app := cli.NewApp()
 	app.Name = filepath.Base(os.Args[0])
-	app.Author = "Docker Machine Contributors"
-	app.Email = "https://github.com/docker/machine"
+	app.Author = "Lambda Machine Local Contributors"
+	app.Email = "https://github.com/lambda-linux/lambda-machine-local"
 
 	app.Commands = commands.Commands
 	app.CommandNotFound = cmdNotFound
-	app.Usage = "Create and manage machines running Docker."
+	app.Usage = "Create and manage local machines running Docker."
 	app.Version = version.FullVersion()
 
-	log.Debug("Docker Machine Version: ", app.Version)
+	log.Debug("Lamba Machine Local Version: ", app.Version)
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
@@ -116,30 +102,6 @@ func main() {
 			Name:   "storage-path, s",
 			Value:  mcndirs.GetBaseDir(),
 			Usage:  "Configures storage path",
-		},
-		cli.StringFlag{
-			EnvVar: "MACHINE_TLS_CA_CERT",
-			Name:   "tls-ca-cert",
-			Usage:  "CA to verify remotes against",
-			Value:  "",
-		},
-		cli.StringFlag{
-			EnvVar: "MACHINE_TLS_CA_KEY",
-			Name:   "tls-ca-key",
-			Usage:  "Private key to generate certificates",
-			Value:  "",
-		},
-		cli.StringFlag{
-			EnvVar: "MACHINE_TLS_CLIENT_CERT",
-			Name:   "tls-client-cert",
-			Usage:  "Client cert to use for TLS",
-			Value:  "",
-		},
-		cli.StringFlag{
-			EnvVar: "MACHINE_TLS_CLIENT_KEY",
-			Name:   "tls-client-key",
-			Usage:  "Private key used in client TLS auth",
-			Value:  "",
 		},
 		cli.StringFlag{
 			EnvVar: "MACHINE_GITHUB_API_TOKEN",
@@ -167,36 +129,8 @@ func main() {
 
 func runDriver(driverName string) {
 	switch driverName {
-	case "amazonec2":
-		plugin.RegisterDriver(amazonec2.NewDriver("", ""))
-	case "azure":
-		plugin.RegisterDriver(azure.NewDriver("", ""))
-	case "digitalocean":
-		plugin.RegisterDriver(digitalocean.NewDriver("", ""))
-	case "exoscale":
-		plugin.RegisterDriver(exoscale.NewDriver("", ""))
-	case "generic":
-		plugin.RegisterDriver(generic.NewDriver("", ""))
-	case "google":
-		plugin.RegisterDriver(google.NewDriver("", ""))
-	case "hyperv":
-		plugin.RegisterDriver(hyperv.NewDriver("", ""))
-	case "none":
-		plugin.RegisterDriver(none.NewDriver("", ""))
-	case "openstack":
-		plugin.RegisterDriver(openstack.NewDriver("", ""))
-	case "rackspace":
-		plugin.RegisterDriver(rackspace.NewDriver("", ""))
-	case "softlayer":
-		plugin.RegisterDriver(softlayer.NewDriver("", ""))
 	case "virtualbox":
 		plugin.RegisterDriver(virtualbox.NewDriver("", ""))
-	case "vmwarefusion":
-		plugin.RegisterDriver(vmwarefusion.NewDriver("", ""))
-	case "vmwarevcloudair":
-		plugin.RegisterDriver(vmwarevcloudair.NewDriver("", ""))
-	case "vmwarevsphere":
-		plugin.RegisterDriver(vmwarevsphere.NewDriver("", ""))
 	default:
 		fmt.Fprintf(os.Stderr, "Unsupported driver: %s\n", driverName)
 		os.Exit(1)
