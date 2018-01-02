@@ -27,7 +27,7 @@ import (
 const (
 	lsDefaultTimeout = 10
 	tableFormatKey   = "table"
-	lsDefaultFormat  = "table {{ .Name }}\t{{ .Active }}\t{{ .DriverName}}\t{{ .State }}\t{{ .URL }}\t{{ .DockerVersion }}\t{{ .Error}}"
+	lsDefaultFormat  = "table {{ .Name }}\t{{ .DriverName}}\t{{ .State }}\t{{ .URL }}\t{{ .DockerVersion }}\t{{ .Error}}"
 )
 
 var (
