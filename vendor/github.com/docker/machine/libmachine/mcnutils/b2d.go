@@ -21,8 +21,8 @@ import (
 )
 
 const (
-	defaultURL            = "https://api.github.com/repos/boot2docker/boot2docker/releases"
-	defaultISOFilename    = "boot2docker.iso"
+	defaultURL            = "https://api.github.com/repos/lambda-linux/lambda-linux-vbox/releases"
+	defaultISOFilename    = "lambda-linux-vbox.iso"
 	defaultVolumeIDOffset = int64(0x8028)
 	versionPrefix         = "-v"
 	defaultVolumeIDLength = 32
