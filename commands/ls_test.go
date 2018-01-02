@@ -313,7 +313,6 @@ func TestGetHostListItems(t *testing.T) {
 	for i := range expected {
 		assert.Equal(t, expected[i].name, items[i].Name)
 		assert.Equal(t, expected[i].state, items[i].State)
-		assert.Equal(t, expected[i].active, items[i].ActiveHost)
 		assert.Equal(t, expected[i].version, items[i].DockerVersion)
 		assert.Equal(t, expected[i].error, items[i].Error)
 	}
@@ -363,32 +362,6 @@ func TestGetHostListItemsEnvDockerHostUnset(t *testing.T) {
 		expected := expected[item.Name]
 
 		assert.Equal(t, expected.state, item.State)
-		assert.Equal(t, expected.active, item.ActiveHost)
-	}
-}
-
-func TestIsActive(t *testing.T) {
-	cases := []struct {
-		dockerHost string
-		state      state.State
-		expected   bool
-	}{
-		{"", state.Running, false},
-		{"tcp://5.6.7.8:2376", state.Running, false},
-		{"tcp://1.2.3.4:2376", state.Stopped, false},
-		{"tcp://1.2.3.4:2376", state.Running, true},
-		{"tcp://1.2.3.4:3376", state.Running, false},
-	}
-
-	for _, c := range cases {
-		os.Unsetenv("DOCKER_HOST")
-		if c.dockerHost != "" {
-			os.Setenv("DOCKER_HOST", c.dockerHost)
-		}
-
-		actual := isActive(c.state, "tcp://1.2.3.4:2376")
-
-		assert.Equal(t, c.expected, actual)
 	}
 }
 
