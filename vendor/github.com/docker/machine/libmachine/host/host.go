@@ -273,5 +273,5 @@ func (h *Host) Provision() error {
 		return err
 	}
 
-	return provisioner.Provision(*h.HostOptions.SwarmOptions, *h.HostOptions.AuthOptions, *h.HostOptions.EngineOptions)
+	return provisioner.Provision(swarm.Options{}, *h.HostOptions.AuthOptions, *h.HostOptions.EngineOptions)
 }
