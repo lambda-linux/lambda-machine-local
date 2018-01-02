@@ -192,7 +192,134 @@ func confirmInput(msg string) (bool, error) {
 	return confirmed, nil
 }
 
-var Commands = []cli.Command{}
+var Commands = []cli.Command{
+	{
+		Flags:           SharedCreateFlags,
+		Name:            "create",
+		Usage:           "Create a machine",
+		Description:     fmt.Sprintf("Run '%s create --driver name' to include the create flags for that driver in the help text.", os.Args[0]),
+		Action:          runCommand(cmdCreateOuter),
+		SkipFlagParsing: true,
+	},
+	{
+		Name:        "inspect",
+		Usage:       "Inspect information about a machine",
+		Description: "Argument is a machine name.",
+		Action:      runCommand(cmdInspect),
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:  "format, f",
+				Usage: "Format the output using the given go template.",
+				Value: "",
+			},
+		},
+	},
+	{
+		Name:        "ip",
+		Usage:       "Get the IP address of a machine",
+		Description: "Argument(s) are one or more machine names.",
+		Action:      runCommand(cmdIP),
+	},
+	{
+		Name:        "kill",
+		Usage:       "Kill a machine",
+		Description: "Argument(s) are one or more machine names.",
+		Action:      runCommand(cmdKill),
+	},
+	{
+		Name:   "ls",
+		Usage:  "List machines",
+		Action: runCommand(cmdLs),
+		Flags: []cli.Flag{
+			cli.BoolFlag{
+				Name:  "quiet, q",
+				Usage: "Enable quiet mode",
+			},
+			cli.StringSliceFlag{
+				Name:  "filter",
+				Usage: "Filter output based on conditions provided",
+				Value: &cli.StringSlice{},
+			},
+			cli.IntFlag{
+				Name:  "timeout, t",
+				Usage: fmt.Sprintf("Timeout in seconds, default to %ds", lsDefaultTimeout),
+				Value: lsDefaultTimeout,
+			},
+			cli.StringFlag{
+				Name:  "format, f",
+				Usage: "Pretty-print machines using a Go template",
+			},
+		},
+	},
+	{
+		Name:        "restart",
+		Usage:       "Restart a machine",
+		Description: "Argument(s) are one or more machine names.",
+		Action:      runCommand(cmdRestart),
+	},
+	{
+		Flags: []cli.Flag{
+			cli.BoolFlag{
+				Name:  "force, f",
+				Usage: "Remove local configuration even if machine cannot be removed, also implies an automatic yes (`-y`)",
+			},
+			cli.BoolFlag{
+				Name:  "y",
+				Usage: "Assumes automatic yes to proceed with remove, without prompting further user confirmation",
+			},
+		},
+		Name:        "rm",
+		Usage:       "Remove a machine",
+		Description: "Argument(s) are one or more machine names.",
+		Action:      runCommand(cmdRm),
+	},
+	{
+		Name:            "ssh",
+		Usage:           "Log into or run a command on a machine with SSH.",
+		Description:     "Arguments are [machine-name] [command]",
+		Action:          runCommand(cmdSSH),
+		SkipFlagParsing: true,
+	},
+	{
+		Name:        "scp",
+		Usage:       "Copy files between machines",
+		Description: "Arguments are [machine:][path] [machine:][path].",
+		Action:      runCommand(cmdScp),
+		Flags: []cli.Flag{
+			cli.BoolFlag{
+				Name:  "recursive, r",
+				Usage: "Copy files recursively (required to copy directories)",
+			},
+			cli.BoolFlag{
+				Name:  "delta, d",
+				Usage: "Reduce amount of data sent over network by sending only the differences (uses rsync)",
+			},
+		},
+	},
+	{
+		Name:        "start",
+		Usage:       "Start a machine",
+		Description: "Argument(s) are one or more machine names.",
+		Action:      runCommand(cmdStart),
+	},
+	{
+		Name:        "status",
+		Usage:       "Get the status of a machine",
+		Description: "Argument is a machine name.",
+		Action:      runCommand(cmdStatus),
+	},
+	{
+		Name:        "stop",
+		Usage:       "Stop a machine",
+		Description: "Argument(s) are one or more machine names.",
+		Action:      runCommand(cmdStop),
+	},
+	{
+		Name:   "version",
+		Usage:  "Show the Lambda Machine Local version",
+		Action: runCommand(cmdVersion),
+	},
+}
 
 func printIP(h *host.Host) func() error {
 	return func() error {
@@ -211,7 +338,15 @@ func printIP(h *host.Host) func() error {
 // We run commands concurrently and communicate back an error if there was one.
 func machineCommand(actionName string, host *host.Host, errorChan chan<- error) {
 	// TODO: These actions should have their own type.
-	commands := map[string](func() error){}
+	commands := map[string](func() error){
+		"configureAuth": host.ConfigureAuth,
+		"start":         host.Start,
+		"stop":          host.Stop,
+		"restart":       host.Restart,
+		"kill":          host.Kill,
+		"ip":            printIP(host),
+		"provision":     host.Provision,
+	}
 
 	log.Debugf("command=%s machine=%s", actionName, host.Name)
 

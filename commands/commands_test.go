@@ -8,10 +8,142 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/docker/machine/libmachine"
+	"github.com/docker/machine/libmachine/auth"
 	"github.com/docker/machine/libmachine/crashreport"
+	"github.com/docker/machine/libmachine/engine"
+	"github.com/docker/machine/libmachine/host"
+	"github.com/docker/machine/libmachine/hosttest"
 	"github.com/docker/machine/libmachine/mcnerror"
+	"github.com/docker/machine/libmachine/provision"
+	"github.com/docker/machine/libmachine/state"
+	"github.com/lambda-linux/lambda-machine-local/commands/commandstest"
+	"github.com/lambda-linux/lambda-machine-local/drivers/fakedriver"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestRunActionForeachMachine(t *testing.T) {
+	defer provision.SetDetector(&provision.StandardDetector{})
+	provision.SetDetector(&provision.FakeDetector{
+		Provisioner: provision.NewNetstatProvisioner(),
+	})
+
+	// Assume a bunch of machines in randomly started or
+	// stopped states.
+	machines := []*host.Host{
+		{
+			Name:       "foo",
+			DriverName: "fakedriver",
+			Driver: &fakedriver.Driver{
+				MockState: state.Running,
+			},
+			HostOptions: &host.Options{
+				AuthOptions:   &auth.Options{},
+				EngineOptions: &engine.Options{},
+			},
+		},
+		{
+			Name:       "bar",
+			DriverName: "fakedriver",
+			Driver: &fakedriver.Driver{
+				MockState: state.Stopped,
+			},
+			HostOptions: &host.Options{
+				AuthOptions:   &auth.Options{},
+				EngineOptions: &engine.Options{},
+			},
+		},
+		{
+			Name: "baz",
+			// Ssh, don't tell anyone but this
+			// driver only _thinks_ it's named
+			// virtualbox...  (to test serial actions)
+			// It's actually FakeDriver!
+			DriverName: "virtualbox",
+			Driver: &fakedriver.Driver{
+				MockState: state.Stopped,
+			},
+			HostOptions: &host.Options{
+				AuthOptions:   &auth.Options{},
+				EngineOptions: &engine.Options{},
+			},
+		},
+		{
+			Name:       "spam",
+			DriverName: "virtualbox",
+			Driver: &fakedriver.Driver{
+				MockState: state.Running,
+			},
+			HostOptions: &host.Options{
+				AuthOptions:   &auth.Options{},
+				EngineOptions: &engine.Options{},
+			},
+		},
+		{
+			Name:       "eggs",
+			DriverName: "fakedriver",
+			Driver: &fakedriver.Driver{
+				MockState: state.Stopped,
+			},
+			HostOptions: &host.Options{
+				AuthOptions:   &auth.Options{},
+				EngineOptions: &engine.Options{},
+			},
+		},
+		{
+			Name:       "ham",
+			DriverName: "fakedriver",
+			Driver: &fakedriver.Driver{
+				MockState: state.Running,
+			},
+			HostOptions: &host.Options{
+				AuthOptions:   &auth.Options{},
+				EngineOptions: &engine.Options{},
+			},
+		},
+	}
+
+	runActionForeachMachine("start", machines)
+
+	for _, machine := range machines {
+		machineState, _ := machine.Driver.GetState()
+
+		assert.Equal(t, state.Running, machineState)
+	}
+
+	runActionForeachMachine("stop", machines)
+
+	for _, machine := range machines {
+		machineState, _ := machine.Driver.GetState()
+
+		assert.Equal(t, state.Stopped, machineState)
+	}
+}
+
+func TestPrintIPEmptyGivenLocalEngine(t *testing.T) {
+	stdoutGetter := commandstest.NewStdoutGetter()
+	defer stdoutGetter.Stop()
+
+	host, _ := hosttest.GetDefaultTestHost()
+	err := printIP(host)()
+
+	assert.NoError(t, err)
+	assert.Equal(t, "\n", stdoutGetter.Output())
+}
+
+func TestPrintIPPrintsGivenRemoteEngine(t *testing.T) {
+	stdoutGetter := commandstest.NewStdoutGetter()
+	defer stdoutGetter.Stop()
+
+	host, _ := hosttest.GetDefaultTestHost()
+	host.Driver = &fakedriver.Driver{
+		MockState: state.Running,
+		MockIP:    "1.2.3.4",
+	}
+	err := printIP(host)()
+
+	assert.NoError(t, err)
+	assert.Equal(t, "1.2.3.4\n", stdoutGetter.Output())
+}
 
 func TestConsolidateError(t *testing.T) {
 	cases := []struct {
