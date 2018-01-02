@@ -15,7 +15,6 @@ import (
 
 	"github.com/docker/machine/libmachine"
 	"github.com/docker/machine/libmachine/drivers"
-	"github.com/docker/machine/libmachine/engine"
 	"github.com/docker/machine/libmachine/host"
 	"github.com/docker/machine/libmachine/log"
 	"github.com/docker/machine/libmachine/mcndockerclient"
@@ -32,24 +31,20 @@ const (
 
 var (
 	headers = map[string]string{
-		"Name":          "NAME",
-		"DriverName":    "DRIVER",
-		"State":         "STATE",
-		"EngineOptions": "ENGINE_OPTIONS",
-		"Error":         "ERRORS",
-		"DockerVersion": "DOCKER",
-		"ResponseTime":  "RESPONSE",
+		"Name":         "NAME",
+		"DriverName":   "DRIVER",
+		"State":        "STATE",
+		"Error":        "ERRORS",
+		"ResponseTime": "RESPONSE",
 	}
 )
 
 type HostListItem struct {
-	Name          string
-	DriverName    string
-	State         state.State
-	EngineOptions *engine.Options
-	Error         string
-	DockerVersion string
-	ResponseTime  time.Duration
+	Name         string
+	DriverName   string
+	State        state.State
+	Error        string
+	ResponseTime time.Duration
 }
 
 // FilterOptions -
@@ -304,19 +299,12 @@ func attemptGetHostState(h *host.Host, stateQueryChan chan<- HostListItem) {
 		hostError = ""
 	}
 
-	var engineOptions *engine.Options
-	if h.HostOptions != nil {
-		engineOptions = h.HostOptions.EngineOptions
-	}
-
 	stateQueryChan <- HostListItem{
-		Name:          h.Name,
-		DriverName:    h.Driver.DriverName(),
-		State:         currentState,
-		EngineOptions: engineOptions,
-		DockerVersion: dockerVersion,
-		Error:         hostError,
-		ResponseTime:  time.Now().Round(time.Millisecond).Sub(requestBeginning.Round(time.Millisecond)),
+		Name:         h.Name,
+		DriverName:   h.Driver.DriverName(),
+		State:        currentState,
+		Error:        hostError,
+		ResponseTime: time.Now().Round(time.Millisecond).Sub(requestBeginning.Round(time.Millisecond)),
 	}
 }
 
