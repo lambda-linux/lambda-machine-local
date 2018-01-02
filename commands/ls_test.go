@@ -297,15 +297,13 @@ func TestGetHostListItems(t *testing.T) {
 	}
 
 	expected := []struct {
-		name    string
-		state   state.State
-		active  bool
-		version string
-		error   string
+		name  string
+		state state.State
+		error string
 	}{
-		{"bar10", state.Error, false, "Unknown", "Unable to get ip"},
-		{"bar100", state.Stopped, false, "Unknown", ""},
-		{"foo", state.Running, true, "v1.9", ""},
+		{"bar10", state.Error, "Unable to get ip"},
+		{"bar100", state.Stopped, ""},
+		{"foo", state.Running, ""},
 	}
 
 	items := getHostListItems(hosts, map[string]error{}, 10*time.Second)
@@ -313,7 +311,6 @@ func TestGetHostListItems(t *testing.T) {
 	for i := range expected {
 		assert.Equal(t, expected[i].name, items[i].Name)
 		assert.Equal(t, expected[i].state, items[i].State)
-		assert.Equal(t, expected[i].version, items[i].DockerVersion)
 		assert.Equal(t, expected[i].error, items[i].Error)
 	}
 }
