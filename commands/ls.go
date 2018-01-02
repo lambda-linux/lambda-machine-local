@@ -393,8 +393,3 @@ func sortHostListItemsByName(items []HostListItem) {
 		items[i] = m[v]
 	}
 }
-
-func urlPort(urlWithPort string) string {
-	parts := strings.Split(urlWithPort, ":")
-	return parts[len(parts)-1]
-}
