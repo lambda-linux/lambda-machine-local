@@ -1,15 +1,15 @@
 # ![Lambda Machine Local](logo.png)
 
-Lambda Machine Local provides a stable and secure local docker development
-environment. It is designed to complement a stable and and secure production
-environment on [AWS](https://aws.amazon.com/).
+Lambda Machine Local provides a stable and secure local container development
+environment.
 
 Lambda Machine Local
 uses
 [Lambda Linux VirtualBox flavor](https://github.com/lambda-linux/lambda-linux-vbox) as
-its container host OS and is based
-on [Amazon Linux](https://aws.amazon.com/amazon-linux-ami/), the Linux operating
-system that powers AWS.
+its container host OS and is based on [Alpine Linux](https://alpinelinux.org/)
+user space and a customized minimal kernel
+from
+[Yocto Project](http://www.yoctoproject.org/docs/2.4/kernel-dev/kernel-dev.html#kernel-dev-advanced).
 
 You can download Lambda Machine Local for Mac, Linux or
 Windows [here](https://github.com/lambda-linux/lambda-machine-local/releases).
@@ -30,39 +30,22 @@ Detecting operating system of created instance...
 Waiting for SSH to be available...
 Detecting the provisioner...
 Provisioning with lambda...
-Copying certs to the local machine directory...
-Copying certs to the remote machine...
-Checking connection to Docker...
-Docker is up and running!
-To see how to connect your Docker Client to the Docker Engine running on this virtual machine,
-run: lambda-machine-local env ll-default
+To connect to this virtual machine, run: lambda-machine-local ssh ll-default
 
 $ lambda-machine-local ls
-NAME         ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
-ll-default   -        virtualbox   Running   tcp://192.168.99.100:2376   v1.12.6
+NAME         DRIVER       STATE     ERRORS
+ll-default   virtualbox   Running
 
-$ eval "$(lambda-machine-local env ll-default)"
+$ lambda-machine-local ssh ll-default
 
-$ docker run --rm amazonlinux echo hello world
-Unable to find image 'amazonlinux:latest' locally
-latest: Pulling from library/amazonlinux
-c9141092a50d: Pull complete
-Digest: sha256:2010c88ac1e7c118d61793eec71dcfe0e276d72b38dd86bd3e49da1f8c48bf54
-Status: Downloaded newer image for amazonlinux:latest
+ip-192-168-99-101:~$ docker run --rm busybox echo hello world
+Unable to find image 'busybox:latest' locally
+latest: Pulling from library/busybox
+0ffadd58f2a6: Pull complete
+Digest: sha256:bbc3a03235220b170ba48a157dd097dd1379299370e1ed99ce976df0355d24f0
+Status: Downloaded newer image for busybox:latest
 hello world
 ```
-
-**Note:** In the above example we
-used
-[Amazon Linux Container Image](http://docs.aws.amazon.com/AmazonECR/latest/userguide/amazon_linux_container_image.html).
-Lambda Machine Local is designed to be a local development primitive and we
-support all major operating systems used inside containers. So, feel free to use
-your preferred container image operating system with Lambda Machine Local. **We
-will gladly support you!**
-
-If you don't have a preferred operating system for your container images, we
-recommend that you consider Amazon Linux. It is a proven operating system and is
-used by many AWS services such as [AWS Lambda](https://aws.amazon.com/lambda/).
 
 -----------------------------------------
 
@@ -91,37 +74,37 @@ used by many AWS services such as [AWS Lambda](https://aws.amazon.com/lambda/).
   * [Command line reference](#command_line_reference)
   * [Customizing Lambda Linux VirtualBox flavor](#customizing_lambda_linux_virtualbox_flavor)
   * [VirtualBox shared folder support](#virtualbox_shared_folder_support)
+  * [Additional Information](#additional_information)
+    * [Windows Installation](#windows_installation)
+    * [Running Lambda Machine Local alongside Docker Machine](#running_lambda_machine_local_alongside_docker_machine)
 
 -----------------------------------------
 
 <a name="what_is_lambda_machine_local"></a>
 ## What is Lambda Machine Local?
 
-Lambda Machine Local is a tool that provides a local docker development
+Lambda Machine Local is a tool that provides a local container development
 environment with a high bar for stability and security. You can use Lambda
 Machine Local to create a supported container host on your Mac, Linux or
 Windows.
 
 Using `lambda-machine-local` commands, you can start, inspect, stop, and restart
-a managed local container host. By pointing Lambda Machine Local CLI at a
-running managed local host you can run `docker` commands directly on that host.
+a managed local container host. By using Lambda Machine Local CLI you can also
+ssh into a container host and run `docker` commands on the host.
 
-For example &ndash; You can run `lambda-machine-local env default`. Then after
-following on-screen instructions to complete environment setup, you can run
-`docker ps`, `docker run --rm amazonlinux echo hello world`, and so forth.
+For example &ndash; You can run `lambda-machine-local ssh default`. Then you can
+run `docker ps`, `docker run --rm busybox echo hello world`, and so forth.
 
 <a name="components"></a>
 Following is the list of components supported by Lambda Machine Local.
 
 | Component        | Why is it included? / Remarks |
 | ---------------- | ------------------- |
-| Container OS | [Lambda Linux VirtualBox Flavor](https://github.com/lambda-linux/lambda-linux-vbox) is used as the container host OS. Lambda Linux is based on [Amazon Linux](https://aws.amazon.com/amazon-linux-ami/), the Linux operating system that powers [AWS](https://aws.amazon.com/) |
-| Linux Kernel | LTS version [4.9.43](https://cdn.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.9.43) |
-| Docker Engine | Version [17.03.1-ce](https://github.com/moby/moby/releases/tag/v17.03.1-ce) |
-| Storage Driver| Device mapper in [direct-lvm](https://docs.docker.com/v1.12/engine/userguide/storagedriver/device-mapper-driver/#/configure-direct-lvm-mode-for-production) mode |
-| Serverless | AWS Serverless Application Model ([AWS SAM](http://docs.aws.amazon.com/lambda/latest/dg/deploying-lambda-apps.html)) and AWS CloudFormation using AWS [CLI](https://aws.amazon.com/cli/) |
-| Orchestration | Amazon ECS [CLI](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI.html) and Docker Compose version [1](https://docs.docker.com/compose/compose-file/compose-file-v1/) and [2](https://docs.docker.com/compose/compose-file/compose-file-v2/) is supported. There is no Docker Swarm support in Lambda Machine Local. |
-| VirtualBox Guest Additions | Version [5.1.20](http://download.virtualbox.org/virtualbox/5.1.10/) is included for shared filesystem support |
+| Container OS | [Lambda Linux VirtualBox Flavor](https://github.com/lambda-linux/lambda-linux-vbox) is used as the container host OS |
+| Linux Kernel | LTS version [4.9.65](https://cdn.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.9.65) |
+| Docker Engine | Version [17.09.1-ce](https://github.com/moby/moby/releases/tag/v17.09.1-ce)  without Swarm support |
+| Storage Driver| [Overlay2](https://docs.docker.com/v17.06/engine/userguide/storagedriver/overlayfs-driver/) with ext4 as backing filesystem |
+| VirtualBox Guest Additions | Version [5.1.30](http://download.virtualbox.org/virtualbox/5.1.30/) is included for shared filesystem support |
 | Libmachine | Lambda Machine Local uses libmachine version [0.11.0](https://github.com/docker/machine/tree/v0.10.0/libmachine) to manage local container host OS |
 
 <a name="installation"></a>
@@ -131,109 +114,17 @@ Lambda Machine Local binaries for Mac, Linux and Windows along with installation
 instructions and SHA-256 / MD5 checksums is
 available [here](https://github.com/lambda-linux/lambda-machine-local/releases).
 
-Also install Docker [client](https://github.com/docker/docker/releases) version
-1.12.6 or later on your local Mac, Linux or Windows host. If you prefer to use
-Docker client from your local container host, you can `lambda-machine-local ssh
-<LOCAL_VIRTUAL_MACHINE_NAME>` and run `docker` command from there.
+After creating local container host, you can `lambda-machine-local ssh
+<LOCAL_VIRTUAL_MACHINE_NAME>` and run `docker` commands from there.
 
 ```console
 $ lambda-machine-local ssh ll-default
 
-[ll-user@ip-192-168-99-100 ~]$ docker info
+ip-192-168-99-101:~$ docker info
 ```
 
-Depending on your container workflow, please consider installing
-
-  * [Amazon ECS CLI](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI.html)
-  * [Docker Compose](https://docs.docker.com/v1.12/compose/overview/)
-
-[AWS CLI](https://aws.amazon.com/cli/) is also available on local container host
-via `yum install ...`
-
-```console
-$ lambda-machine-local ssh ll-default
-
-[ll-user@ip-192-168-99-100 ~]$ sudo yum install -y aws-cli
-```
-
-For Windows users, we recommend that you please consider
-installing [MSYS2](http://www.msys2.org/)
-or [Git Bash](https://git-for-windows.github.io/). With MSYS2 you can install
-`winpty`, `rsync` and `openssh` packages using `pacman`. `pacman` is a package
-management tool similar to `yum` and `apt-get`. With Git Bash you get `winpty`
-and `openssh`, but [no](https://github.com/git-for-windows/git/issues/347)
-`rsync` package.
-
-```console
-username@DESKTOP-xxxxxxx MINGW64 ~
-$ pacman -S rsync openssh winpty
-resolving dependencies...
-looking for conflicting packages...
-
-Packages (3) openssh-7.3p1-2  rsync-3.1.2-2  winpty-0.4.0-2
-
-Total Installed Size:  7.58 MiB
-Net Upgrade Size:      0.00 MiB
-
-:: Proceed with installation? [Y/n] Y
-
-[...]
-
-username@DESKTOP-xxxxxxx MINGW64 ~
-$
-```
-
-If `rsync` and `openssh` packages are available, Lambda Machine Local makes uses
-them when running `lambda-machine-local ssh` and `lambda-machine-local scp`
-commands.
-
-We anticipate that you'll frequently use these commands in your workflow,
-therefore installing `rsync` and `openssh` packages can be very helpful in
-enhancing your developer experience with Lambda Machine Local.
-
-Also on Windows, sometimes when trying to delete a container host virtual
-machine, you might encounter `Can't remove "<virtual_machine_name>"` error. For
-example &ndash;
-
-```console
-username@DESKTOP-xxxxxxx MINGW64 ~
-$ lambda-machine-local ls
-NAME         ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
-ll-default   -        virtualbox   Running   tcp://192.168.99.100:2376   v1.12.6
-
-username@DESKTOP-xxxxxxx MINGW64 ~
-$ lambda-machine-local rm -y ll-default
-About to remove ll-default
-WARNING: This action will delete both local reference and remote instance.
-Can't remove "ll-default"
-
-username@DESKTOP-xxxxxxx MINGW64 ~
-$ lambda-machine-local ls
-NAME         ACTIVE   DRIVER      STATE   URL   DOCKER   ERRORS
-ll-default            not found   Error                  open C:\Users\username\.docker\lambda-machine-local\
-machines\ll-default\config.json: The system cannot find the file specified.
-```
-
-If you encounter this issue, you can use [`lambda-machine-local rm`](#cli_rm)
-with `--force` (`-f`) flag to remove the `ll-default` directory and correct the
-error.
-
-```console
-username@DESKTOP-xxxxxxx MINGW64 ~
-$ lambda-machine-local rm -f ll-default
-About to remove ll-default
-WARNING: This action will delete both local reference and remote instance.
-Error removing host "ll-default": open C:\Users\username\.docker\lambda-machine-local\machines\ll-default\config.json:
-The system cannot find the file specified.
-Successfully removed ll-default
-
-username@DESKTOP-xxxxxxx MINGW64 ~
-$ lambda-machine-local ls
-NAME   ACTIVE   DRIVER   STATE   URL   DOCKER   ERRORS
-
-username@DESKTOP-xxxxxxx MINGW64 ~
-$
-```
+Windows users please see this [link](#windows_installation) for additional
+installation information.
 
 <a name="getting_started"></a>
 ## Getting Started
@@ -258,54 +149,10 @@ see
 for information on how to setup Windows to toggle between Hyper-V and
 VirtualBox.
 
-<a name="running_lambda_machine_local_alongside_docker_machine"></a>
-#### Running Lambda Machine Local alongside Docker Machine
-
-Lambda Machine Local and Docker Machine both use VirtualBox to manage their
-respective container host virtual machines. In case of Docker Machine, it uses
-boot2docker ISO image. In Lambda Machine Local we use Lambda Linux VirtualBox
-Flavor ISO image.
-
-When running Lambda Machine Local and Docker Machine at the same time, it is
-**important** not to use the same container host virtual machine name. We
-recommend that you use a prefix to distinguish between your Docker Machine and
-Lambda Machine Local container virtual machines. In the following example we are
-using the prefixes `b2d-` and `ll-`.
-
-```console
-$ docker-machine create b2d-default
-
-$ lambda-machine-local create ll-default
-```
-
-If by mistake you create container host virtual machines with the same name,
-you will encounter the following error.
-
-```console
-VBoxManage: error: The machine 'default' is already locked for a session (or being unlocked)
-VBoxManage: error: Details: code VBOX_E_INVALID_OBJECT_STATE (0x80bb0007), component MachineWrap, interface
-IMachine, callee nsISupports
-VBoxManage: error: Context: "LockMachine(a->session, LockType_Write)" at line 493 of file VBoxManageModifyVM.cpp
-```
-
-You can use `VBoxManage` command to delete the virtual machines and remove the
-metadata.
-
-```console
-$ VBoxManage list vms
-"default" {136b3d00-d9bb-45ba-a927-9bca3087638e}
-"default" {6b80915a-1c66-47c1-bc8c-fb6fdec42560}
-
-$ VBoxManage unregistervm --delete 136b3d00-d9bb-45ba-a927-9bca3087638e
-0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
-
-$ VBoxManage unregistervm --delete 6b80915a-1c66-47c1-bc8c-fb6fdec42560
-0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
-
-$ rm -rf ~/.docker/machine/machines/default
-
-$ rm -rf ~/.docker/lambda-machine-local/machines/default
-```
+Additionally if you are looking to run Lambda Machine Local alongside Docker
+Machine, then please see
+this [link](#running_lambda_machine_local_alongside_docker_machine) for
+additional information.
 
 <a name="using_lambda_machine_local_to_run_containers"></a>
 ### Using Lambda Machine Local to run containers
@@ -313,7 +160,7 @@ $ rm -rf ~/.docker/lambda-machine-local/machines/default
 To run containers, you'll need to &ndash;
 
   * Create a new container host VM or start an existing one
-  * Switch your docker client environment to container host VM
+  * Use Lambda Machine Local CLI to ssh into container host VM
   * Use docker client to create, load and manage containers
 
 Once you create a container host VM, you can reuse it as often as you like. Just
@@ -330,7 +177,7 @@ like any VirtualBox VM, it maintains its configuration between uses.
 
    ```console
    $ lambda-machine-local ls
-   NAME   ACTIVE   DRIVER   STATE   URL   DOCKER   ERRORS
+   NAME   DRIVER   STATE   ERRORS
    ```
 
 3. Create a container host virtual machine.
@@ -353,43 +200,34 @@ like any VirtualBox VM, it maintains its configuration between uses.
    Waiting for SSH to be available...
    Detecting the provisioner...
    Provisioning with lambda...
-   Copying certs to the local machine directory...
-   Copying certs to the remote machine...
-   Checking connection to Docker...
-   Docker is up and running!
-   To see how to connect your Docker Client to the Docker Engine running on this virtual machine,
-   run: lambda-machine-local env default
+   To connect to this virtual machine, run: lambda-machine-local ssh default
    ```
 
 4. List container host virtual machines again to see the newly minted `default` virtual machine.
 
    ```console
    $ lambda-machine-local ls
-   NAME      ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
-   default   -        virtualbox   Running   tcp://192.168.99.100:2376   v1.12.6
+   NAME      DRIVER       STATE     ERRORS
+   default   virtualbox   Running
    ```
 
-5. Get the environment commands for new container host virtual machine.
+5. Use Lambda Machine Local CLI to ssh into new container host virtual machine.
 
-   As noted in the output of the `lambda-machine-local create` command, you need to tell Docker client to talk to the new container host virtual machine. You can do this with `lambda-machine-local env` command.
+   As noted in the output of the `lambda-machine-local create` command, you can connect to the virtual machine using `lambda-machine-local ssh` command.
 
    ```console
-   $ lambda-machine-local env default
-   export DOCKER_TLS_VERIFY="1"
-   export DOCKER_HOST="tcp://192.168.99.100:2376"
-   export DOCKER_CERT_PATH="/Users/username/.docker/lambda-machine-local/machines/default"
-   export DOCKER_MACHINE_NAME="default"
-   # Run this command to configure your shell:
-   # eval $(lambda-machine-local env default)
+   $ lambda-machine-local ssh default
+
+   *Thank you* for using
+     _                  _        _         _     _
+    | |    __ _  _ __  | |__  __| | __ _  | |   (_) _ _  _  _ __ __
+    | |__ / _` || '  \ | '_ \/ _` |/ _` | | |__ | || ' \| || |\ \ /
+    |____|\__,_||_|_|_||_.__/\__,_|\__,_| |____||_||_||_|\_,_|/_\_\
+
+   VirtualBox Release: 2018.01.0 | Twitter: @lambda_linux
+
+   ip-192-168-99-101:~$
    ```
-
-6. Connect your shell to new container host virtual machine.
-
-   ```console
-   $ eval $(lambda-machine-local env default)
-   ```
-
-   **Note:** If you are using a shell other than `bash` and `zsh` please see [`env`](#cli_env) command's documentation for details on configuring your shell.
 
 <a name="running_containers"></a>
 #### Running containers
@@ -399,11 +237,11 @@ Run a container with `docker run` to verify your set up.
 1. Use `docker run` to download and run `busybox` with a simple `echo` command.
 
    ```console
-   $ docker run busybox echo hello world
+   ip-192-168-99-101:~$ docker run busybox echo hello world
    Unable to find image 'busybox:latest' locally
    latest: Pulling from library/busybox
-   7520415ce762: Pull complete
-   Digest: sha256:32f093055929dbc23dec4d03e09dfe971f5973a9ca5cf059cbfb644c206aa83f
+   0ffadd58f2a6: Pull complete
+   Digest: sha256:bbc3a03235220b170ba48a157dd097dd1379299370e1ed99ce976df0355d24f0
    Status: Downloaded newer image for busybox:latest
    hello world
    ```
@@ -414,13 +252,13 @@ Run a container with `docker run` to verify your set up.
 
    ```console
    $ lambda-machine-local ip default
-   192.168.99.100
+   192.168.99.101
    ```
 
 3. Run a webserver ([nginx](https://nginx.org/)) in a container with the following command.
 
    ```console
-   $ docker run -d -p 8000:80 nginx
+   ip-192-168-99-101:~$ docker run -d -p 8000:80 nginx
    ```
 
    When the image is finished pulling, you can hit the server at port 8000 on the IP address given to you by `lambda-machine-local ip`.
@@ -490,35 +328,26 @@ Starting "default"...
 Machine "default" was started.
 Waiting for SSH to be available...
 Detecting the provisioner...
-Copying certs to the local machine directory...
-Copying certs to the remote machine...
-Started machines may have new IP addresses. You may need to re-run the `lambda-machine-local env` command.
 ```
 
 Following `lambda-machine-local` commands follow this pattern &ndash;
 
-  * `lambda-machine-local config`
-  * `lambda-machine-local env`
   * `lambda-machine-local inspect`
   * `lambda-machine-local ip`
   * `lambda-machine-local kill`
-  * `lambda-machine-local provision`
-  * `lambda-machine-local regenerate-certs`
   * `lambda-machine-local restart`
   * `lambda-machine-local ssh`
   * `lambda-machine-local start`
   * `lambda-machine-local status`
   * `lambda-machine-local stop`
-  * `lambda-machine-local url`
 
 <a name="auto_updates_and_crash_reporting"></a>
 #### Auto updates and crash reporting
 
-Like Amazon Linux, Lambda Linux VirtualBox flavor is a rolling release and is
-continuously updated for stability and security. When you create a new container
-host virtual machine, we check on GitHub to see if you are running the latest
-version of Lambda Linux VirtualBox flavor. If your local ISO image is outdated,
-we download the newer version and use that to create container host.
+When you create a new container host virtual machine, we check on GitHub to see
+if you are running the latest version of Lambda Linux VirtualBox flavor. If your
+local ISO image is outdated, we download the newer version and use that to
+create container host.
 
 Lambda Machine Local also has a built-in crash reporting mechanism. Only in the
 event of a crash, it allows us to collect information about your Lambda Machine
@@ -545,17 +374,12 @@ Please see `--bugsnag-api-token` command line flag for more details.
 
 Lambda Machine Local CLI has the following sub-commands.
 
-  * [active](#cli_active)
-  * [config](#cli_config)
   * [create](#cli_create)
-  * [env](#cli_env)
   * [help](#cli_help)
   * [inspect](#cli_inspect)
   * [ip](#cli_ip)
   * [kill](#cli_kill)
   * [ls](#cli_ls)
-  * [provision](#cli_provision)
-  * [regenerate-certs](#cli_regenerate_certs)
   * [restart](#cli_restart)
   * [rm](#cli_rm)
   * [scp](#cli_scp)
@@ -563,52 +387,6 @@ Lambda Machine Local CLI has the following sub-commands.
   * [start](#cli_start)
   * [status](#cli_status)
   * [stop](#cli_stop)
-  * [url](#cli_url)
-
-<a name="cli_active"></a>
-#### active
-
-List the local container host virtual machine that is _active_. A virtual
-machine is considered active if the `DOCKER_HOST` environment variable points to
-it.
-
-```console
-$ lambda-machine-local ls
-NAME      ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
-default   -        virtualbox   Running   tcp://192.168.99.103:2376   v1.12.6
-etcd1     -        virtualbox   Running   tcp://192.168.99.100:2376   v1.12.6
-etcd2     -        virtualbox   Running   tcp://192.168.99.101:2376   v1.12.6
-etcd3     *        virtualbox   Running   tcp://192.168.99.102:2376   v1.12.6
-
-$ echo $DOCKER_HOST
-tcp://192.168.99.102:2376
-
-$ lambda-machine-local active
-etcd3
-```
-
-<a name="cli_config"></a>
-#### config
-
-```console
-Usage: lambda-machine-local config [arg...]
-
-Print the connection config for machine
-
-Description:
-   Argument is a machine name.
-```
-
-For example &ndash;
-
-```console
-$ lambda-machine-local config dev
---tlsverify
---tlscacert="/Users/username/.docker/lambda-machine-local/machines/dev/ca.pem"
---tlscert="/Users/username/.docker/lambda-machine-local/machines/dev/cert.pem"
---tlskey="/Users/username/.docker/lambda-machine-local/machines/dev/key.pem"
--H=tcp://192.168.99.100:2376
-```
 
 <a name="cli_create"></a>
 #### create
@@ -630,19 +408,12 @@ Detecting operating system of created instance...
 Waiting for SSH to be available...
 Detecting the provisioner...
 Provisioning with lambda...
-Copying certs to the local machine directory...
-Copying certs to the remote machine...
-Checking connection to Docker...
-Docker is up and running!
-To see how to connect your Docker Client to the Docker Engine running on this virtual machine,
-run: lambda-machine-local env dev
+To connect to this virtual machine, run: lambda-machine-local ssh dev
 ```
 
 **Note:** Libmachine has the concept of _driver_ which is used to manage
 hypervisors or cloud instances. In Lambda Machine Local we use VirtualBox as our
-default driver. It is also the only driver supported at this time. When
-deploying containers to the cloud, we recommend that you use cloud provider
-supported tools such as AWS CLI and ECS CLI.
+default driver. It is also the only driver supported at this time.
 
 ```console
 Usage: lambda-machine-local create [OPTIONS] [arg...]
@@ -684,96 +455,6 @@ Options:
                                                 [$VIRTUALBOX_UI_TYPE]
 ```
 
-<a name="cli_env"></a>
-#### env
-
-Set environment variables to configure docker client to run commands on a specific
-container host.
-
-```console
-Usage: lambda-machine-local env [OPTIONS] [arg...]
-
-Display the commands to set up the environment for the Docker client
-
-Description:
-   Argument is a machine name.
-
-Options:
-
-   --shell      Force environment to be configured for a specified shell: [fish, cmd, powershell, tcsh], default is
-                auto-detect
-   --unset, -u  Unset variables instead of setting them
-   --no-proxy   Add machine IP to NO_PROXY environment variable
-```
-
-`lambda-machine-local env <LOCAL_VIRTUAL_MACHINE_NAME>` will print out `export`
-commands which can be run in a sub-shell. Running `lambda-machine-local env -u`
-will print out corresponding `unset` commands.
-
-```console
-$ env | grep DOCKER
-
-$ eval "$(lambda-machine-local env dev)"
-
-$ env | grep DOCKER
-DOCKER_TLS_VERIFY=1
-DOCKER_HOST=tcp://192.168.99.100:2376
-DOCKER_CERT_PATH=/Users/username/.docker/lambda-machine-local/machines/dev
-DOCKER_MACHINE_NAME=dev
-
-$ # If you run a docker command, it will now run against "dev" container host
-
-$ eval "$(lambda-machine-local env -u)"
-
-$ env | grep DOCKER
-
-$ # The environment variables have been unset
-```
-
-The output above is for `bash` and `zsh` shells. Lambda Machine Local can
-auto-detect your environment and print appropriate commands for other shells
-such as `cmd`, `fish`, `powershell` and `emacs`.
-
-You can also use `--shell` flag to specify the shell for `lambda-machine-local
-env` command.
-
-```console
-C:\Users\username\bin>lambda-machine-local.exe env --shell cmd dev
-SET DOCKER_TLS_VERIFY=1
-SET DOCKER_HOST=tcp://192.168.99.100:2376
-SET DOCKER_CERT_PATH=C:\Users\username\.docker\lambda-machine-local\machines\dev
-SET DOCKER_MACHINE_NAME=dev
-SET COMPOSE_CONVERT_WINDOWS_PATHS=true
-REM Run this command to configure your shell:
-REM     @FOR /f "tokens=*" %i IN ('lambda-machine-local.exe env --shell cmd dev') DO @%i
-```
-
-##### Excluding the created container host virtual machines from proxies
-
-The `env` command supports `--no-proxy` flag which outputs configuration to set
-`NO_PROXY` environment variable. This is useful in network environments where a
-HTTP proxy is required for Internet access.
-
-```console
-$ lambda-machine-local env --no-proxy dev
-export DOCKER_TLS_VERIFY="1"
-export DOCKER_HOST="tcp://192.168.99.100:2376"
-export DOCKER_CERT_PATH="/Users/username/.docker/lambda-machine-local/machines/dev"
-export DOCKER_MACHINE_NAME="dev"
-export NO_PROXY="192.168.99.100"
-# Run this command to configure your shell:
-# eval $(lambda-machine-local env --no-proxy dev)
-```
-
-**Note:** When using `--no-proxy` flag, you might also need to
-configure
-[`HTTPS_PROXY`](https://docs.docker.com/v1.12/engine/reference/commandline/dockerd/#/running-a-docker-daemon-behind-an-httpsproxy) for
-docker engine. Please
-see
-[docker configuration files](#customizing_lambda_linux_virtualbox_flavor_docker_configuration_files) for
-details on how to customize docker engine running on container host virtual
-machine.
-
 <a name="cli_help"></a>
 #### help
 
@@ -786,12 +467,13 @@ Shows a list of commands or help for one command
 This command has the form `lambda-machine-local help <COMMAND>`. For example &ndash;
 
 ```console
-Usage: lambda-machine-local config [arg...]
+$ lambda-machine-local help ip
+Usage: lambda-machine-local ip [arg...]
 
-Print the connection config for machine
+Get the IP address of a machine
 
 Description:
-   Argument is a machine name.
+   Argument(s) are one or more machine names.
 ```
 
 <a name="cli_inspect"></a>
@@ -911,16 +593,16 @@ For example &ndash;
 
 ```console
 $ lambda-machine-local ls
-NAME   ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
-dev    -        virtualbox   Running   tcp://192.168.99.100:2376   v1.12.6
+NAME   DRIVER       STATE     ERRORS
+dev    virtualbox   Running
 
 $ lambda-machine-local kill dev
 Killing "dev"...
 Machine "dev" was killed.
 
 $ lambda-machine-local ls
-NAME   ACTIVE   DRIVER       STATE     URL   DOCKER    ERRORS
-dev    -        virtualbox   Stopped         Unknown
+NAME   DRIVER       STATE     ERRORS
+dev    virtualbox   Stopped
 ```
 
 <a name="cli_ls"></a>
@@ -950,8 +632,8 @@ this purpose with a numerical value in seconds.
 
 ```console
 $ lambda-machine-local ls -t 12
-NAME      ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
-default   -        virtualbox   Running   tcp://192.168.99.100:2376   v1.12.6
+NAME      DRIVER       STATE     ERRORS
+default   virtualbox   Running
 ```
 
 ##### Filtering
@@ -968,19 +650,19 @@ Currently supported filters are &ndash;
 
 ```console
 $ lambda-machine-local ls
-NAME      ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
-default   -        virtualbox   Stopped                               Unknown
-foo0      -        virtualbox   Running   tcp://192.168.99.101:2376   v1.12.6
-foo1      -        virtualbox   Running   tcp://192.168.99.102:2376   v1.12.6
-foo2      *        virtualbox   Running   tcp://192.168.99.103:2376   v1.12.6
+NAME      DRIVER       STATE     ERRORS
+default   virtualbox   Stopped
+foo0      virtualbox   Running
+foo1      virtualbox   Running
+foo2      virtualbox   Running
 
 $ lambda-machine-local ls -filter name=foo0
-NAME   ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
-foo0   -        virtualbox   Running   tcp://192.168.99.101:2376   v1.12.6
+NAME   DRIVER       STATE     ERRORS
+foo0   virtualbox   Running
 
 $ lambda-machine-local ls --filter driver=virtualbox --filter state=Stopped
-NAME      ACTIVE   DRIVER       STATE     URL   DOCKER    ERRORS
-default   -        virtualbox   Stopped         Unknown
+NAME      DRIVER       STATE     ERRORS
+default   virtualbox   Stopped
 ```
 
 ##### Formatting
@@ -993,12 +675,8 @@ Valid placeholders for the Go template are listed below.
 | Placeholder | Description |
 | ----------- | ----------- |
 | .Name | Container host virtual machine name |
-| .Active | Is the machine active? |
-| .DriverName | Driver name |
 | .State | Container host virtual machine state (running, stopped, ...) |
-| .URL | Container host virtual machine URL |
 | .Error | Container host virtual machine error |
-| .DockerVersion | Container host virtual machine docker daemon version |
 | .ResponseTime | Time taken by container host virtual machine to respond |
 
 When using the `--format` option, the `ls` command will output the data as the
@@ -1027,58 +705,6 @@ foo1      Running
 foo2      Running
 ```
 
-<a name="cli_provision"></a>
-#### provision
-
-Re-run the provisioning step on an existing container host virtual machine.
-
-Sometimes it might be useful to re-run the provisioning step. Reasons for doing
-so might include a failure of the original provisioning process.
-
-Usage is `lambda-machine-local provision <LOCAL_VIRTUAL_MACHINE_NAME>`. Multiple
-names may be specified.
-
-```console
-$ lambda-machine-local provision foo0 foo1
-Waiting for SSH to be available...
-Waiting for SSH to be available...
-Detecting the provisioner...
-Detecting the provisioner...
-Copying certs to the local machine directory...
-Copying certs to the local machine directory...
-Copying certs to the remote machine...
-Copying certs to the remote machine...
-```
-
-<a name="cli_regenerate_certs"></a>
-#### regenerate-certs
-
-```console
-Usage: lambda-machine-local regenerate-certs [OPTIONS] [arg...]
-
-Regenerate TLS Certificates for a machine
-
-Description:
-   Argument(s) are one or more machine names.
-
-   Options:
-
-   --force, -f  Force rebuild and do not prompt
-```
-
-Regenerate TLS certificates and update container host virtual machine with new
-certificates.
-
-```console
-$ lambda-machine-local regenerate-certs dev
-Regenerate TLS machine certs?  Warning: this is irreversible. (y/n): y
-Regenerating TLS certificates
-Waiting for SSH to be available...
-Detecting the provisioner...
-Copying certs to the local machine directory...
-Copying certs to the remote machine...
-```
-
 <a name="cli_restart"></a>
 #### restart
 
@@ -1104,11 +730,6 @@ Starting "dev"...
 Machine "dev" was started.
 Waiting for SSH to be available...
 Detecting the provisioner...
-Copying certs to the local machine directory...
-Copying certs to the remote machine...
-Waiting for SSH to be available...
-Detecting the provisioner...
-Restarted machines may have new IP addresses. You may need to re-run the `lambda-machine-local env` command.
 ```
 
 <a name="cli_rm"></a>
@@ -1186,7 +807,6 @@ To login, just run `lambda-machine-local ssh virtualmachinename`.
 
 ```console
 $ lambda-machine-local ssh dev
-Last login: Fri Apr 28 13:17:35 2017
 
 *Thank you* for using
   _                  _        _         _     _
@@ -1194,9 +814,9 @@ Last login: Fri Apr 28 13:17:35 2017
  | |__ / _` || '  \ | '_ \/ _` |/ _` | | |__ | || ' \| || |\ \ /
  |____|\__,_||_|_|_||_.__/\__,_|\__,_| |____||_||_||_|\_,_|/_\_\
 
-VirtualBox Release: 2017.03 | Twitter: @lambda_linux
+VirtualBox Release: 2018.01.0 | Twitter: @lambda_linux
 
-[ll-user@ip-192-168-99-100 ~]$
+ip-192-168-99-101:~$
 ```
 
 You can also specify commands to run on container host virtual machine by
@@ -1205,16 +825,18 @@ regular `ssh` program works.
 
 ```console
 $ lambda-machine-local ssh dev free
-             total       used       free     shared    buffers     cached
-Mem:       1020432     953392      67040     852028       3244     881688
--/+ buffers/cache:      68460     951972
+total       used       free     shared    buffers     cached
+Mem:       2051564     202412    1849152     107932       1084     143568
+-/+ buffers/cache:      57760    1993804
 Swap:            0          0          0
 
-$ lambda-machine-local ssh dev df -h
-Filesystem      Size  Used Avail Use% Mounted on
-tmpfs           499M     0  499M   0% /dev/shm
-/dev/sda1       3.8G  8.1M  3.6G   1% /var/lib/lambda-machine-local
-/Users          465G  214G  252G  46% /Users
+$ lambda-machine-local ssh dev sudo df -h
+Filesystem                Size      Used Available Use% Mounted on
+devtmpfs                 10.0M         0     10.0M   0% /dev
+shm                    1001.7M         0   1001.7M   0% /dev/shm
+tmpfs                  1001.7M    105.3M    896.5M  11% /
+
+[...]
 ```
 
 ##### Different types of SSH
@@ -1256,9 +878,6 @@ Starting "dev"...
 Machine "dev" was started.
 Waiting for SSH to be available...
 Detecting the provisioner...
-Copying certs to the local machine directory...
-Copying certs to the remote machine...
-Started machines may have new IP addresses. You may need to re-run the `lambda-machine-local env` command.
 ```
 
 <a name="cli_status"></a>
@@ -1296,49 +915,26 @@ For example &ndash;
 
 ```console
 $ lambda-machine-local ls
-NAME   ACTIVE   DRIVER       STATE     URL                         DOCKER    ERRORS
-dev    *        virtualbox   Running   tcp://192.168.99.100:2376   v1.12.6
+NAME   DRIVER       STATE     ERRORS
+dev    virtualbox   Running
 
 $ lambda-machine-local stop dev
 Stopping "dev"...
 Machine "dev" was stopped.
 
 $ lambda-machine-local ls
-NAME   ACTIVE   DRIVER       STATE     URL   DOCKER    ERRORS
-dev    -        virtualbox   Stopped         Unknown
-```
-
-<a name="cli_url"></a>
-#### url
-
-```console
-Usage: lambda-machine-local stop [arg...]
-
-Get the URL of a machine
-
-Description:
-   Argument is a machine name.
-```
-
-For example &ndash;
-
-```console
-$ lambda-machine-local url dev
-tcp://192.168.99.100:2376
+NAME   DRIVER       STATE     ERRORS
+dev    virtualbox   Stopped
 ```
 
 <a name="customizing_lambda_linux_virtualbox_flavor"></a>
 ## Customizing Lambda Linux VirtualBox flavor
 
 Lambda Machine Local is designed to be a stable and secure **local development
-primitive**. Our thinking behind primitives is very similar to **Primitives not
-frameworks** lesson
-from
-[10 Lessons from 10 Years of Amazon Web Services](http://www.allthingsdistributed.com/2016/03/10-lessons-from-10-years-of-aws.html).
-
-As such, we cannot anticipate all the use-cases where you might find using
-Lambda Machine Local useful. Therefore we would like to provide you with
-mechanisms to customize Lambda Linux VirtualBox flavor for your workflow needs.
+primitive**. As such, we cannot anticipate all the use-cases where you might
+find using Lambda Machine Local useful. Therefore we would like to provide you
+with mechanisms to customize Lambda Linux VirtualBox flavor for your workflow
+needs.
 
 Before we can describe the customization mechanisms available, we would like to
 provide a high-level overview of how Lambda Machine Local and Lambda Linux
@@ -1366,62 +962,28 @@ You can find the ISO and disk image used by virtual machine at the following loc
   * `~/username/.docker/lambda-machine-local/machines/virtualmachinename/lambda-linux-vbox.iso`
   * `~/username/.docker/lambda-machine-local/machines/virtualmachinename/disk.vmdk`
 
-Upon booting Lambda Linux VirtualBox flavor
-starts
-[`/usr/bin/lml_init`](https://github.com/lambda-linux/lambda-linux-vbox/blob/master/install-root/usr-bin-lml_init).
-`lml_init` first checks to see if `disk.vmdk` is already setup. If so, it
-proceeds with the rest of the initialization process. If `disk.vmdk` is not
-setup then `lml_init` partitions and formats the disk as follows.
+Upon booting Lambda Linux VirtualBox flavor starts OpenRC service manager.
+OpenRC local scripts first checks to see if `disk.vmdk` is already setup. If so,
+it proceeds with the rest of the initialization process. If `disk.vmdk` is not
+setup then `/etc/local.d/01-disk-setup.start` partitions and formats the disk as
+follows.
 
-`lml_init` creates
+`01-disk-setup.start` creates
 a
 [GUID partition table (GPT)](https://en.wikipedia.org/wiki/GUID_Partition_Table)
-with two partitions.
+with one partitions.
 
 ```console
-[ll-user@ip-192-168-99-100 ~]$ sudo sgdisk -p /dev/sda
+ip-192-168-99-101:~$ sudo sgdisk -p /dev/sda
 
 [...]
 
 Number  Start (sector)    End (sector)  Size       Code  Name
-   1            2048         8192000   3.9 GiB     8300  Linux
-   2         8194048        40959966   15.6 GiB    8E00  Linux LVM
+   1            2048        40959966   19.5 GiB    8300  Linux
 ```
 
-The first partition (`/dev/sda1`) is a standard Linux partition formatted with
-an ext4 filesystem and mounted at `/var/lib/lambda-machine-local` . The second
-partition (`/dev/sda2`) is configured as
-a [Logical Volume Management](http://tldp.org/HOWTO/LVM-HOWTO/) device. The LVM
-device is directly accessed by docker via its `devicemapper` storage backend.
-
-```console
-[ll-user@ip-192-168-99-100 ~]$ mount | grep sda
-/dev/sda1 on /var/lib/lambda-machine-local type ext4 (rw)
-
-[ll-user@ip-192-168-99-100 ~]$ sudo pvs
-  PV         VG     Fmt  Attr PSize  PFree
-  /dev/sda2  docker lvm2 a--  15.62g 144.00m
-
-[ll-user@ip-192-168-99-100 ~]$ sudo vgs
-  VG     #PV #LV #SN Attr   VSize  VFree
-  docker   1   1   0 wz--n- 15.62g 144.00m
-
-[ll-user@ip-192-168-99-100 ~]$ sudo lvs
-  LV          VG     Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-  docker-pool docker twi-a-t--- 15.45g             1.88   0.37
-
-[ll-user@ip-192-168-99-100 ~]$ docker info | grep "Data Space"
- Data Space Used: 312 MB
- Data Space Total: 16.59 GB
- Data Space Available: 16.28 GB
-
-[ll-user@ip-192-168-99-100 ~]$ docker info | grep -A 4 "Storage Driver"
-Storage Driver: devicemapper
- Pool Name: docker-docker--pool
- Pool Blocksize: 524.3 kB
- Base Device Size: 10.74 GB
- Backing Filesystem: ext4
-```
+The partition (`/dev/sda1`) is a standard Linux partition formatted with
+an ext4 filesystem and mounted at `/var/lib/lambda-machine-local`.
 
 All changes made via `docker` commands and changes to
 `/var/lib/lambda-machine-local` are preserved across virtual machine reboots.
@@ -1429,12 +991,9 @@ For your convenience, `/var/lib/lambda-machine-local` is organized as follows.
 
 <a name="customizing_lambda_linux_virtualbox_flavor_home_ll_user"></a>
 ```console
-[ll-user@ip-192-168-99-100 ~]$ sudo tree -L 2 /var/lib/lambda-machine-local/
 /var/lib/lambda-machine-local/
 |-- bootlocal.sh
 |-- bootsync.sh
-|-- etc
-|   `-- sysconfig
 |-- home
 |   `-- ll-user
 |-- lost+found
@@ -1450,18 +1009,18 @@ This allows you to easily move files between your host filesystem and
 `/var/lib/lambda-machine-local/home/ll-user` directory.
 
 ```console
-[ll-user@ip-192-168-99-100 ~]$ id ll-user
-uid=500(ll-user) gid=500(ll-user) groups=500(ll-user),10(wheel),497(docker)
+ip-192-168-99-101:~$ id ll-user
+uid=500(ll-user) gid=500(ll-user) groups=500(ll-user),10(wheel),103(docker)
 
-[ll-user@ip-192-168-99-100 ~]$ ls -la /var/lib/lambda-machine-local/home | grep ll-user
-drwx------ 3 ll-user ll-user 4096 Mar 28 17:04 ll-user
+ip-192-168-99-101:~$ ls -la /var/lib/lambda-machine-local/home | grep ll-user
+drwx------    3 ll-user  ll-user       4096 Dec 27 12:30 ll-user
 
-[ll-user@ip-192-168-99-100 ~]$ mount | grep 500
-/Users on /Users type vboxsf (uid=500,gid=500,iocharset=utf8,rw)
+ip-192-168-99-101:~$ ls -la / | grep Users
+drwxr-xr-x    1 ll-user  ll-user        170 Feb 19  2016 Users
 ```
 
-`lml_init` creates two customization files that it uses during subsequent
-invocations. These are -
+OpenRC local scripts creates two customization files that it uses during
+subsequent invocations. These are -
 
   * `/var/lib/lambda-machine-local/bootlocal.sh`
 
@@ -1469,21 +1028,20 @@ invocations. These are -
 
 #### `bootlocal.sh`
 
-`lml_init` executes `bootlocal.sh` at the end of its initialization process. For
-most users we recommend using this file for your customization.
-
-If `bootlocal.sh` exits with an non-zero return status, `lml_init` will log a
-message to `/var/log/messages`.
+`/etc/local.d/07-bootlocal.start` executes `bootlocal.sh` at the end of its
+initialization process. For most users we recommend using this file for your
+customization.
 
 #### `bootsync.sh`
 
-`bootsync.sh` is the first customizable hook executed by `lml_init`.
-`bootsync.sh` is executed prior to starting the docker and ssh daemons.
+`bootsync.sh` is the first customizable hook executed by
+`/etc/local.d/05-bootsync.start`. `bootsync.sh` is executed prior to starting
+the docker and ssh daemons.
 
-**Note:** `lml_init` expects `bootsync.sh` to exit with posix return status of
-zero. If a non-zero return status is encountered, then `lml_init` will **not**
-proceed further with its initialization process. Therefore when customizing this
-file please ensure that any errors in your program are gracefully handled.
+**Note:** OpenRC local scripts `bootsync.sh` to exit with posix return status of
+zero. If a non-zero return status is encountered, then initialization will
+**not** proceed. Therefore when customizing this file please ensure that any
+errors in your program are gracefully handled.
 
 #### Developing and debugging customization scripts
 
@@ -1495,23 +1053,6 @@ With this flag, the virtual machine starts with a GUI console. You will be able
 to log into GUI console using the user name `ll-user` and password `ll-user`.
 You can then `sudo -i` and investigate the behavior of your customization
 scripts.
-
-<a name="customizing_lambda_linux_virtualbox_flavor_docker_configuration_files"></a>
-#### Docker configuration files
-
-Docker configuration files are maintained at
-`/var/lib/lambda-machine-local/etc/sysconfig`. If you need to add additional
-options to your docker daemon, you can edit these files.
-
-```console
-[ll-user@ip-192-168-99-100 ~]$ sudo tree /var/lib/lambda-machine-local/etc/sysconfig/
-/var/lib/lambda-machine-local/etc/sysconfig/
-|-- docker
-|-- docker-storage
-`-- docker-storage-setup
-
-0 directories, 3 files
-```
 
 <a name="virtualbox_shared_folder_support"></a>
 ## VirtualBox shared folder support
@@ -1566,13 +1107,10 @@ flag with `docker run` command.
 
 `/var/lib/lambda-machine-local/home/ll-user` is backed
 by [`disk.vmdk`](#customizing_lambda_linux_virtualbox_flavor_home_disk_vmdk)
-sparse disk image. The filesystem partition backing
-`/var/lib/lambda-machine-local/home/ll-user` is allocated 20% of `disk.vmdk`
-disk image. By default the size of this partition is 3.9GiB and size of
-`disk.vmdk` sparse disk image is 20GB. If your workflow requires more than
-3.9GiB for `/var/lib/lambda-machine-local/home/ll-user`, you can use
-`--virtualbox-disk-size` flag in [`lambda-machine-local create`](#cli_create)
-command to increase the size of `disk.vmdk`.
+sparse disk image. By default the size of `disk.vmdk` sparse disk image is 20GB.
+If your workflow requires more than 20GB, you can use `--virtualbox-disk-size`
+flag in [`lambda-machine-local create`](#cli_create) command to increase the
+size of `disk.vmdk`.
 
 When using development containers, you might want to consider allocating more
 CPU and memory to the underlying container host virtual machine. By default 1
@@ -1613,113 +1151,59 @@ you can use `/var/lib/lambda-machine-local/home/ll-user` directory to store your
 code and other assets. In this case you will need to ensure that you have
 sufficient space for your synchronized code and assets.
 
-However, if you are planning to be using NFS as your synchronization mechanism
-(described next), then you do not need to think about space requirements of
-`/var/lib/lambda-machine-local/home/ll-user` directory.
-
 ##### 2. Set up synchronization mechanism
 
-There are two well known synchronization mechanisms that you can adopt &ndash;
-_Rsync over SSH_ and _NFS_. In Lambda Machine Local, we have support for both
-the mechanisms.
+In Lambda Machine Local, we have support using _Rsync over SSH_ synchronization
+mechanism. It works uniformly across Mac, Windows and Linux.
 
-1. Rsync over SSH
+`rsync` is available natively on Linux and Mac. On Windows we recommend
+installing `rsync` using [MSYS2](http://www.msys2.org/). MSYS2 comes with a
+package management tool called `pacman`. You can install `rsync` and `openssh`
+using the following command.
 
-   Rsync over SSH is more popular synchronization mechanism when compared to
-   NFS. It is also easier to setup and works uniformly across Mac, Windows and
-   Linux.
+```console
+$ pacman -S rsync openssh
+```
 
-   `rsync` is available natively on Linux and Mac. On Windows we recommend
-   installing `rsync` using [MSYS2](http://www.msys2.org/). MSYS2 comes with a
-   package management tool called `pacman`. You can install `rsync` and
-   `openssh` using the following command.
+Lambda Linux VirtualBox flavor also comes pre-installed with `rsync`. There is
+no additional package installation required on container host virtual machine.
 
-   ```console
-   $ pacman -S rsync openssh
-   ```
+```console
+ip-192-168-99-101:~$ which rsync
+/usr/bin/rsync
+```
 
-   Lambda Linux VirtualBox flavor also comes pre-installed with `rsync`. There
-   is no additional package installation required on container host virtual
-   machine.
+`lambda-machine-local scp` command has `--delta` (`-d`) flag which uses `rsync`
+under the hood. To synchronize files (in the example below `app` directory)
+between your VirtualBox host and guest virtual machine you can &ndash;
 
-   ```console
-   [ll-user@ip-192-168-99-100 ~]$ which rsync
-   /usr/bin/rsync
-   ```
+```console
+$ lambda-machine-local scp -r -d app/ default:/var/lib/lambda-machine-local/home/ll-user/app/
+```
 
-   `lambda-machine-local scp` command has `--delta` (`-d`) flag which uses
-   `rsync` under the hood. To synchronize files (in the example below `app`
-   directory) between your VirtualBox host and guest virtual machine you can
-   &ndash;
+For most users, we recommend using `lambda-machine-local scp` with `-d` flag.
 
-   ```console
-   $ lambda-machine-local scp -r -d app/ default:/var/lib/lambda-machine-local/home/ll-user/app/
-   ```
+However sometimes you might want to run `rsync` manually. You can run `rsync`
+manually as shown below.
 
-   For most users, we recommend using `lambda-machine-local scp` with `-d` flag.
+```console
+$ rsync -av -e 'lambda-machine-local ssh default' --exclude '.git' \
+    app :/var/lib/lambda-machine-local/home/ll-user/app
+```
 
-   However sometimes you might want to run `rsync` manually. You can run `rsync`
-   manually as shown below.
+There are two things to take note of in the above command.
 
-   ```console
-   $ rsync -av -e 'lambda-machine-local ssh default' --exclude '.git' \
-       app :/var/lib/lambda-machine-local/home/ll-user/app
-   ```
+  *  We explicitly specify virtual machine name when using `-e` or `--rsh`
+     flag. In this case we use `lambda-machine-local ssh default` instead of
+     the usual `lambda-machine-local ssh`.
 
-   There are two things to take note of in the above command.
+  *  `:` is used to automatically infer remote using shell transport, which
+     in this case is SSH
 
-     *  We explicitly specify virtual machine name when using `-e` or `--rsh`
-        flag. In this case we use `lambda-machine-local ssh default` instead of
-        the usual `lambda-machine-local ssh`.
-
-     *  `:` is used to automatically infer remote using shell transport, which
-        in this case is SSH
-
-   `rsync` is a powerful command with a lot of features. You can `man rsync` for
-   more details on how to customize `rsync`. If you would like to specify your
-   own `ssh` command then you can find the RSA private key for container host
-   virtual machine at
-   `~/.docker/lambda-machine-local/machines/virtualmachinename/id_rsa`.
-
-2. NFS
-
-   Setting up NFS is a bit more complicated when compared to Rsync. There is
-   also no mature NFS server available on Windows. However, with NFS you don't
-   have to worry about disk space requirements on container host virtual
-   machine.
-   
-   First step is to setup NFS server on Mac or Linux. Please refer to the
-   respective OS documentation on how to securely export NFS shares. 
-
-   **Note:** When exporting your NFS shares you **should** restrict access to
-   the share to specific container host virtual machine IP address or to
-   VirtualBox Host Only CIDR. You can get the IP address using the
-   command [`lambda-machine-local ip`](#cmd_ip). The default VirtualBox Host
-   Only CIDR is `192.168.99.1/24`
-
-   Lambda Linux VirtualBox flavor also comes pre-installed with `nfs-utils`
-   package. There is no additional package installation required on container
-   host virtual machine.
-
-   ```console
-   [ll-user@ip-192-168-99-100 ~]$ rpm -q nfs-utils
-   nfs-utils-1.3.0-0.21.ll1.x86_64
-   ```
-
-   Once the NFS share has been exported, you can mount it on container host
-   virtual machine as follows.
-
-   ```console
-   [ll-user@ip-192-168-99-100 ~]$ sudo service rpcbind start
-   Starting rpcbind:                                          [  OK  ]
-
-   [ll-user@ip-192-168-99-100 ~]$ sudo mkdir /var/lib/lambda-machine-local/Users-via-nfs
-
-   [ll-user@ip-192-168-99-100 ~]$ sudo mount -t nfs 192.168.99.1:/Users /var/lib/lambda-machine-local/Users-via-nfs
-
-   [ll-user@ip-192-168-99-100 ~]$ mount | grep nfs
-   192.168.99.1:/Users on /var/lib/lambda-machine-local/Users-via-nfs type nfs (rw,addr=192.168.99.1)
-   ```
+`rsync` is a powerful command with a lot of features. You can `man rsync` for
+more details on how to customize `rsync`. If you would like to specify your own
+`ssh` command then you can find the RSA private key for container host virtual
+machine at `~/.docker/lambda-machine-local/machines/virtualmachinename/id_rsa`.
 
 ##### 3. Triggering synchronization mechanism based on filesystem events
 
@@ -1748,10 +1232,6 @@ same for any workflow. It is only the actions that would differ between
 workflows. For example &ndash; A Node.js front-end project would use a different
 set of actions when compared to a Java backend project.
 
-_NFS Caveat:_ When using NFS, filesystem event would not be triggered inside the
-container. However you can use what is known as _polling_ mode to execute the
-action inside the container.
-
 There are a number of tools that let you monitor filesystem events and trigger
 actions. Some popular ones are &ndash;
 
@@ -1761,3 +1241,137 @@ actions. Some popular ones are &ndash;
 
 You can use any of the above tools or something that you are already comfortable
 with to build your workflow.
+
+<a name="additional_information"></a>
+## Additional Information
+
+<a name="windows_installation"></a>
+### Windows Installation
+
+For Windows users, we recommend that you please consider
+installing [MSYS2](http://www.msys2.org/)
+or [Git Bash](https://git-for-windows.github.io/). With MSYS2 you can install
+`winpty`, `rsync` and `openssh` packages using `pacman`. `pacman` is a package
+management tool similar to `yum` and `apt-get`. With Git Bash you get `winpty`
+and `openssh`, but [no](https://github.com/git-for-windows/git/issues/347)
+`rsync` package.
+
+```console
+username@DESKTOP-xxxxxxx MINGW64 ~
+$ pacman -S rsync openssh winpty
+resolving dependencies...
+looking for conflicting packages...
+
+Packages (3) openssh-7.3p1-2  rsync-3.1.2-2  winpty-0.4.0-2
+
+Total Installed Size:  7.58 MiB
+Net Upgrade Size:      0.00 MiB
+
+:: Proceed with installation? [Y/n] Y
+
+[...]
+
+username@DESKTOP-xxxxxxx MINGW64 ~
+$
+```
+
+If `rsync` and `openssh` packages are available, Lambda Machine Local makes uses
+them when running `lambda-machine-local ssh` and `lambda-machine-local scp`
+commands.
+
+We anticipate that you'll frequently use these commands in your workflow,
+therefore installing `rsync` and `openssh` packages can be very helpful in
+enhancing your developer experience with Lambda Machine Local.
+
+Also on Windows, sometimes when trying to delete a container host virtual
+machine, you might encounter `Can't remove "<virtual_machine_name>"` error. For
+example &ndash;
+
+```console
+username@DESKTOP-xxxxxxx MINGW64 ~
+$ lambda-machine-local ls
+NAME         DRIVER       STATE     ERRORS
+ll-default   virtualbox   Running
+
+username@DESKTOP-xxxxxxx MINGW64 ~
+$ lambda-machine-local rm -y ll-default
+About to remove ll-default
+WARNING: This action will delete both local reference and remote instance.
+Can't remove "ll-default"
+
+username@DESKTOP-xxxxxxx MINGW64 ~
+$ lambda-machine-local ls
+NAME         DRIVER      STATE   ERRORS
+ll-default not found Error open C:\Users\username\.docker\lambda-machine-local\
+machines\ll-default\config.json: The system cannot find the file specified.
+```
+
+If you encounter this issue, you can use [`lambda-machine-local rm`](#cli_rm)
+with `--force` (`-f`) flag to remove the `ll-default` directory and correct the
+error.
+
+```console
+username@DESKTOP-xxxxxxx MINGW64 ~
+$ lambda-machine-local rm -f ll-default
+About to remove ll-default
+WARNING: This action will delete both local reference and remote instance.
+Error removing host "ll-default": open C:\Users\username\.docker\lambda-machine-local\machines\ll-default\config.json:
+The system cannot find the file specified.
+Successfully removed ll-default
+
+username@DESKTOP-xxxxxxx MINGW64 ~
+$ lambda-machine-local ls
+NAME   DRIVER   STATE   ERRORS
+
+username@DESKTOP-xxxxxxx MINGW64 ~
+$
+```
+
+<a name="running_lambda_machine_local_alongside_docker_machine"></a>
+### Running Lambda Machine Local alongside Docker Machine
+
+Lambda Machine Local and Docker Machine both use VirtualBox to manage their
+respective container host virtual machines. In case of Docker Machine, it uses
+boot2docker ISO image. In Lambda Machine Local we use Lambda Linux VirtualBox
+Flavor ISO image.
+
+When running Lambda Machine Local and Docker Machine at the same time, it is
+**important** not to use the same container host virtual machine name. We
+recommend that you use a prefix to distinguish between your Docker Machine and
+Lambda Machine Local container virtual machines. In the following example we are
+using the prefixes `b2d-` and `ll-`.
+
+```console
+$ docker-machine create b2d-default
+
+$ lambda-machine-local create ll-default
+```
+
+If by mistake you create container host virtual machines with the same name,
+you will encounter the following error.
+
+```console
+VBoxManage: error: The machine 'default' is already locked for a session (or being unlocked)
+VBoxManage: error: Details: code VBOX_E_INVALID_OBJECT_STATE (0x80bb0007), component MachineWrap, interface
+IMachine, callee nsISupports
+VBoxManage: error: Context: "LockMachine(a->session, LockType_Write)" at line 493 of file VBoxManageModifyVM.cpp
+```
+
+You can use `VBoxManage` command to delete the virtual machines and remove the
+metadata.
+
+```console
+$ VBoxManage list vms
+"default" {136b3d00-d9bb-45ba-a927-9bca3087638e}
+"default" {6b80915a-1c66-47c1-bc8c-fb6fdec42560}
+
+$ VBoxManage unregistervm --delete 136b3d00-d9bb-45ba-a927-9bca3087638e
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+
+$ VBoxManage unregistervm --delete 6b80915a-1c66-47c1-bc8c-fb6fdec42560
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+
+$ rm -rf ~/.docker/machine/machines/default
+
+$ rm -rf ~/.docker/lambda-machine-local/machines/default
+```
