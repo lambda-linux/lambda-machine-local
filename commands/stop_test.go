@@ -13,8 +13,6 @@ import (
 )
 
 func TestCmdStop(t *testing.T) {
-	t.Skip("skipping test; temporarily disable TestCmdStop")
-
 	testCases := []struct {
 		commandLine    CommandLine
 		api            libmachine.API
