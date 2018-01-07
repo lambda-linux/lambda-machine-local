@@ -165,7 +165,7 @@ func (h *Host) Restart() error {
 		}
 	}
 
-	return h.WaitForDocker()
+	return nil
 }
 
 func (h *Host) DockerVersion() (string, error) {
