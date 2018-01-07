@@ -398,7 +398,6 @@ func TestGetHostStateError(t *testing.T) {
 	assert.Equal(t, "foo", hostItem.Name)
 	assert.Equal(t, state.Error, hostItem.State)
 	assert.Equal(t, "Driver", hostItem.DriverName)
-	assert.Empty(t, hostItem.URL)
 	assert.Equal(t, "Unable to get ip", hostItem.Error)
 }
 
@@ -425,7 +424,6 @@ func TestGetSomeHostInError(t *testing.T) {
 	assert.Equal(t, "bar", hostItem.Name)
 	assert.Equal(t, state.Error, hostItem.State)
 	assert.Equal(t, "not found", hostItem.DriverName)
-	assert.Empty(t, hostItem.URL)
 	assert.Equal(t, "invalid memory address or nil pointer dereference", hostItem.Error)
 
 	hostItem = hostItems[1]
