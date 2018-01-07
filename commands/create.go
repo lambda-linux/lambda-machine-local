@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/codegangsta/cli"
-	"github.com/docker/machine/commands/mcndirs"
 	"github.com/docker/machine/libmachine"
 	"github.com/docker/machine/libmachine/auth"
 	"github.com/docker/machine/libmachine/crashreport"
@@ -27,6 +26,7 @@ import (
 	"github.com/docker/machine/libmachine/mcnerror"
 	"github.com/docker/machine/libmachine/mcnflag"
 	"github.com/docker/machine/libmachine/swarm"
+	"github.com/lambda-linux/lambda-machine-local/commands/mcndirs"
 )
 
 var (
