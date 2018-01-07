@@ -470,8 +470,9 @@ func (b *B2dUtils) isLatest() bool {
 
 // MakeDiskImage makes a boot2docker VM disk image.
 // See https://github.com/boot2docker/boot2docker/blob/master/rootfs/rootfs/etc/rc.d/automount
+// Ext4 label can be a maximum of 16 characters. We use 'll-vbox-data'
 func MakeDiskImage(publicSSHKeyPath string) (*bytes.Buffer, error) {
-	magicString := "boot2docker, please format-me"
+	magicString := "lambda-linux-vbox-disk, please format-me"
 
 	buf := new(bytes.Buffer)
 	tw := tar.NewWriter(buf)
