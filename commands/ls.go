@@ -33,8 +33,6 @@ const (
 var (
 	headers = map[string]string{
 		"Name":          "NAME",
-		"Active":        "ACTIVE",
-		"ActiveHost":    "ACTIVE_HOST",
 		"DriverName":    "DRIVER",
 		"State":         "STATE",
 		"URL":           "URL",
@@ -47,8 +45,6 @@ var (
 
 type HostListItem struct {
 	Name          string
-	Active        string
-	ActiveHost    bool
 	DriverName    string
 	State         state.State
 	URL           string
@@ -315,16 +311,8 @@ func attemptGetHostState(h *host.Host, stateQueryChan chan<- HostListItem) {
 		engineOptions = h.HostOptions.EngineOptions
 	}
 
-	activeHost := isActive(currentState, url)
-	active := "-"
-	if activeHost {
-		active = "*"
-	}
-
 	stateQueryChan <- HostListItem{
 		Name:          h.Name,
-		Active:        active,
-		ActiveHost:    activeHost,
 		DriverName:    h.Driver.DriverName(),
 		State:         currentState,
 		URL:           url,
@@ -404,10 +392,6 @@ func sortHostListItemsByName(items []HostListItem) {
 	for i, v := range s {
 		items[i] = m[v]
 	}
-}
-
-func isActive(currentState state.State, hostURL string) bool {
-	return currentState == state.Running && hostURL == os.Getenv("DOCKER_HOST")
 }
 
 func urlPort(urlWithPort string) string {
