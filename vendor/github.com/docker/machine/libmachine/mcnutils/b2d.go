@@ -203,6 +203,35 @@ func (*b2dReleaseGetter) getReleaseID(apiURL string) (string, error) {
 	return fmt.Sprintf("%d", i.ID), nil
 }
 
+// getISOAssetURL gets asset URL for lambda-linux-vbox.iso.
+func (*b2dReleaseGetter) getISOAssetURL(releaseID string, owner string, repo string) (string, error) {
+	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/%s/assets", owner, repo, releaseID)
+	client := getClient()
+	req, err := getRequest(url)
+	if err != nil {
+		return "", err
+	}
+	rsp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer rsp.Body.Close()
+
+	var assets []struct {
+		Name string `json:"name"`
+		Url  string `json:"url"`
+	}
+	if err := json.NewDecoder(rsp.Body).Decode(&assets); err != nil {
+		return "", err
+	}
+	for _, asset := range assets {
+		if asset.Name == "lambda-linux-vbox.iso" {
+			return asset.Url, nil
+		}
+	}
+	return "", errGitHubAPIResponse
+}
+
 // getReleaseURL gets the latest release URL of Boot2Docker.
 func (b *b2dReleaseGetter) getReleaseURL(apiURL string) (string, error) {
 	if apiURL == "" {
