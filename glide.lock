@@ -1,6 +1,10 @@
-hash: 2d2ce1ee6d7d61882e3373a533c756f9a311908a75a239bea12bf573acd825c4
-updated: 2017-04-28T02:45:49.780397814Z
+hash: 53b50fc0b6e4fb7755b19c228e991b16a4a178349075aab047636a62632fe6fd
+updated: 2017-04-28T03:17:03.543844611Z
 imports:
 - name: github.com/docker/machine
   version: 5b274558ea6ca822c06dd407a4e774a0105c3f60
-testImports: []
+testImports:
+- name: github.com/stretchr/testify
+  version: 1f4a1643a57e798696635ea4c126e9127adb7d3c
+  subpackages:
+  - assert
