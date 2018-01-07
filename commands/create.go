@@ -40,47 +40,6 @@ var (
 			Value:  "virtualbox",
 			EnvVar: "MACHINE_DRIVER",
 		},
-		cli.StringFlag{
-			Name:   "engine-install-url",
-			Usage:  "Custom URL to use for engine installation",
-			Value:  drivers.DefaultEngineInstallURL,
-			EnvVar: "MACHINE_DOCKER_INSTALL_URL",
-		},
-		cli.StringSliceFlag{
-			Name:  "engine-opt",
-			Usage: "Specify arbitrary flags to include with the created engine in the form flag=value",
-			Value: &cli.StringSlice{},
-		},
-		cli.StringSliceFlag{
-			Name:  "engine-insecure-registry",
-			Usage: "Specify insecure registries to allow with the created engine",
-			Value: &cli.StringSlice{},
-		},
-		cli.StringSliceFlag{
-			Name:   "engine-registry-mirror",
-			Usage:  "Specify registry mirrors to use",
-			Value:  &cli.StringSlice{},
-			EnvVar: "ENGINE_REGISTRY_MIRROR",
-		},
-		cli.StringSliceFlag{
-			Name:  "engine-label",
-			Usage: "Specify labels for the created engine",
-			Value: &cli.StringSlice{},
-		},
-		cli.StringFlag{
-			Name:  "engine-storage-driver",
-			Usage: "Specify a storage driver to use with the engine",
-		},
-		cli.StringSliceFlag{
-			Name:  "engine-env",
-			Usage: "Specify environment variables to set in the engine",
-			Value: &cli.StringSlice{},
-		},
-		cli.StringSliceFlag{
-			Name:  "tls-san",
-			Usage: "Support extra SANs for TLS certs",
-			Value: &cli.StringSlice{},
-		},
 	}
 )
 
