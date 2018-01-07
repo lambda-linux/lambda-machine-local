@@ -32,14 +32,6 @@ type PackageListInfo struct {
 	OsReleaseVersion string
 }
 
-func init() {
-	Register("RedHat", &RegisteredProvisioner{
-		New: func(d drivers.Driver) Provisioner {
-			return NewRedHatProvisioner("rhel", d)
-		},
-	})
-}
-
 func NewRedHatProvisioner(osReleaseID string, d drivers.Driver) *RedHatProvisioner {
 	systemdProvisioner := NewSystemdProvisioner(osReleaseID, d)
 	systemdProvisioner.SSHCommander = RedHatSSHCommander{Driver: d}

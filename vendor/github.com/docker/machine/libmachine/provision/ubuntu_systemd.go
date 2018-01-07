@@ -14,12 +14,6 @@ import (
 	"github.com/docker/machine/libmachine/swarm"
 )
 
-func init() {
-	Register("Ubuntu-SystemD", &RegisteredProvisioner{
-		New: NewUbuntuSystemdProvisioner,
-	})
-}
-
 func NewUbuntuSystemdProvisioner(d drivers.Driver) Provisioner {
 	return &UbuntuSystemdProvisioner{
 		NewSystemdProvisioner("ubuntu", d),
