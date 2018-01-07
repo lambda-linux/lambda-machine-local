@@ -266,58 +266,6 @@ func TestFilterHostsDifferentFlagsProduceAND(t *testing.T) {
 	assert.Empty(t, filterHosts(hosts, opts))
 }
 
-func TestGetHostListItems(t *testing.T) {
-	defer func(versioner mcndockerclient.DockerVersioner) { mcndockerclient.CurrentDockerVersioner = versioner }(mcndockerclient.CurrentDockerVersioner)
-	mcndockerclient.CurrentDockerVersioner = &mcndockerclient.FakeDockerVersioner{Version: "1.9"}
-
-	// TODO: Ideally this would mockable via interface instead.
-	defer func(host string) { os.Setenv("DOCKER_HOST", host) }(os.Getenv("DOCKER_HOST"))
-	os.Setenv("DOCKER_HOST", "tcp://active.host.com:2376")
-
-	hosts := []*host.Host{
-		{
-			Name: "foo",
-			Driver: &fakedriver.Driver{
-				MockState: state.Running,
-				MockIP:    "active.host.com",
-			},
-		},
-		{
-			Name: "bar100",
-			Driver: &fakedriver.Driver{
-				MockState: state.Stopped,
-			},
-		},
-		{
-			Name: "bar10",
-			Driver: &fakedriver.Driver{
-				MockState: state.Error,
-			},
-		},
-	}
-
-	expected := []struct {
-		name    string
-		state   state.State
-		active  bool
-		version string
-		error   string
-	}{
-		{"bar10", state.Error, false, "Unknown", "Unable to get ip"},
-		{"bar100", state.Stopped, false, "Unknown", ""},
-		{"foo", state.Running, true, "v1.9", ""},
-	}
-
-	items := getHostListItems(hosts, map[string]error{}, 10*time.Second)
-
-	for i := range expected {
-		assert.Equal(t, expected[i].name, items[i].Name)
-		assert.Equal(t, expected[i].state, items[i].State)
-		assert.Equal(t, expected[i].version, items[i].DockerVersion)
-		assert.Equal(t, expected[i].error, items[i].Error)
-	}
-}
-
 func TestGetHostListItemsEnvDockerHostUnset(t *testing.T) {
 	defer func(versioner mcndockerclient.DockerVersioner) { mcndockerclient.CurrentDockerVersioner = versioner }(mcndockerclient.CurrentDockerVersioner)
 	mcndockerclient.CurrentDockerVersioner = &mcndockerclient.FakeDockerVersioner{Version: "1.9"}
@@ -363,42 +311,6 @@ func TestGetHostListItemsEnvDockerHostUnset(t *testing.T) {
 
 		assert.Equal(t, expected.state, item.State)
 	}
-}
-
-func TestGetHostStateTimeout(t *testing.T) {
-	hosts := []*host.Host{
-		{
-			Name: "foo",
-			Driver: &fakedriver.Driver{
-				MockState: state.Timeout,
-			},
-		},
-	}
-
-	hostItem := getHostListItems(hosts, nil, time.Millisecond)[0]
-
-	assert.Equal(t, "foo", hostItem.Name)
-	assert.Equal(t, state.Timeout, hostItem.State)
-	assert.Equal(t, "Driver", hostItem.DriverName)
-	assert.Equal(t, time.Millisecond, hostItem.ResponseTime)
-}
-
-func TestGetHostStateError(t *testing.T) {
-	hosts := []*host.Host{
-		{
-			Name: "foo",
-			Driver: &fakedriver.Driver{
-				MockState: state.Error,
-			},
-		},
-	}
-
-	hostItem := getHostListItems(hosts, nil, 10*time.Second)[0]
-
-	assert.Equal(t, "foo", hostItem.Name)
-	assert.Equal(t, state.Error, hostItem.State)
-	assert.Equal(t, "Driver", hostItem.DriverName)
-	assert.Equal(t, "Unable to get ip", hostItem.Error)
 }
 
 func TestGetSomeHostInError(t *testing.T) {
