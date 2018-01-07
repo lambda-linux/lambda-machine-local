@@ -23,6 +23,7 @@ type BaseDriver struct {
 	SwarmMaster    bool
 	SwarmHost      string
 	SwarmDiscovery string
+	GithubAPIToken string
 }
 
 // DriverName returns the name of the driver
