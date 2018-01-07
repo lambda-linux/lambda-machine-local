@@ -302,7 +302,7 @@ func (b *b2dISO) version() (string, error) {
 	// This will return "v0.1.0" given the above string
 	vers := strings.TrimSpace(fullVersion)[versionIndex+1:]
 
-	log.Debug("local Boot2Docker ISO version: ", vers)
+	log.Debug("local Lambda Linux VirtualBox ISO version: ", vers)
 	return vers, nil
 }
 
@@ -403,20 +403,20 @@ func (b *B2dUtils) UpdateISOCache(isoURL string) error {
 	if isoURL != "" {
 		if exists {
 			// Warn that the b2d iso won't be updated if isoURL is set
-			log.Warnf("Boot2Docker URL was explicitly set to %q at create time, so Docker Machine cannot upgrade this machine to the latest version.", isoURL)
+			log.Warnf("Lambda Linux VirtualBox URL was explicitly set to %q at create time, so Lambda Machine Local cannot upgrade this machine to the latest version.", isoURL)
 		}
 		// Non-default B2D are not cached
 		return nil
 	}
 
 	if !exists {
-		log.Info("No default Boot2Docker ISO found locally, downloading the latest release...")
+		log.Info("No default Lambda Linux VirtualBox ISO found locally, downloading the latest release...")
 		return b.DownloadLatestBoot2Docker("")
 	}
 
 	latest := b.isLatest()
 	if !latest {
-		log.Info("Default Boot2Docker ISO is out-of-date, downloading the latest release...")
+		log.Info("Default Lambda Linux VirtualBox ISO is out-of-date, downloading the latest release...")
 		return b.DownloadLatestBoot2Docker("")
 	}
 
@@ -455,13 +455,13 @@ func (b *B2dUtils) CopyIsoToMachineDir(isoURL, machineName string) error {
 func (b *B2dUtils) isLatest() bool {
 	localVer, err := b.version()
 	if err != nil {
-		log.Warn("Unable to get the local Boot2Docker ISO version: ", err)
+		log.Warn("Unable to get the local Lambda Linux VirtualBox ISO version: ", err)
 		return false
 	}
 
 	latestVer, err := b.getReleaseTag("")
 	if err != nil {
-		log.Warn("Unable to get the latest Boot2Docker ISO release version: ", err)
+		log.Warn("Unable to get the latest Lambda Linux VirtualBox ISO release version: ", err)
 		return true
 	}
 
