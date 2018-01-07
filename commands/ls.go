@@ -21,14 +21,13 @@ import (
 	"github.com/docker/machine/libmachine/mcndockerclient"
 	"github.com/docker/machine/libmachine/persist"
 	"github.com/docker/machine/libmachine/state"
-	"github.com/docker/machine/libmachine/swarm"
 	"github.com/skarademir/naturalsort"
 )
 
 const (
 	lsDefaultTimeout = 10
 	tableFormatKey   = "table"
-	lsDefaultFormat  = "table {{ .Name }}\t{{ .Active }}\t{{ .DriverName}}\t{{ .State }}\t{{ .URL }}\t{{ .Swarm }}\t{{ .DockerVersion }}\t{{ .Error}}"
+	lsDefaultFormat  = "table {{ .Name }}\t{{ .Active }}\t{{ .DriverName}}\t{{ .State }}\t{{ .URL }}\t{{ .DockerVersion }}\t{{ .Error}}"
 )
 
 var (
@@ -39,8 +38,6 @@ var (
 		"DriverName":    "DRIVER",
 		"State":         "STATE",
 		"URL":           "URL",
-		"SwarmOptions":  "SWARM_OPTIONS",
-		"Swarm":         "SWARM",
 		"EngineOptions": "ENGINE_OPTIONS",
 		"Error":         "ERRORS",
 		"DockerVersion": "DOCKER",
@@ -55,8 +52,6 @@ type HostListItem struct {
 	DriverName    string
 	State         state.State
 	URL           string
-	SwarmOptions  *swarm.Options
-	Swarm         string
 	EngineOptions *engine.Options
 	Error         string
 	DockerVersion string
@@ -114,32 +109,7 @@ func cmdLs(c CommandLine, api libmachine.API) error {
 	timeout := time.Duration(c.Int("timeout")) * time.Second
 	items := getHostListItems(hostList, hostInError, timeout)
 
-	swarmMasters := make(map[string]string)
-	swarmInfo := make(map[string]string)
-
-	for _, host := range hostList {
-		if host.HostOptions != nil {
-			swarmOptions := host.HostOptions.SwarmOptions
-			if swarmOptions.Master {
-				swarmMasters[swarmOptions.Discovery] = host.Name
-			}
-
-			if swarmOptions.Discovery != "" {
-				swarmInfo[host.Name] = swarmOptions.Discovery
-			}
-		}
-	}
-
 	for _, item := range items {
-		swarmColumn := ""
-		if item.SwarmOptions != nil && item.SwarmOptions.Discovery != "" {
-			swarmColumn = swarmMasters[item.SwarmOptions.Discovery]
-			if item.SwarmOptions.Master {
-				swarmColumn = fmt.Sprintf("%s (master)", swarmColumn)
-			}
-		}
-		item.Swarm = swarmColumn
-
 		if err := template.Execute(w, item); err != nil {
 			return err
 		}
@@ -340,10 +310,8 @@ func attemptGetHostState(h *host.Host, stateQueryChan chan<- HostListItem) {
 		hostError = ""
 	}
 
-	var swarmOptions *swarm.Options
 	var engineOptions *engine.Options
 	if h.HostOptions != nil {
-		swarmOptions = h.HostOptions.SwarmOptions
 		engineOptions = h.HostOptions.EngineOptions
 	}
 
@@ -360,7 +328,6 @@ func attemptGetHostState(h *host.Host, stateQueryChan chan<- HostListItem) {
 		DriverName:    h.Driver.DriverName(),
 		State:         currentState,
 		URL:           url,
-		SwarmOptions:  swarmOptions,
 		EngineOptions: engineOptions,
 		DockerVersion: dockerVersion,
 		Error:         hostError,
