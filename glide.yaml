@@ -1,2 +1,4 @@
 package: github.com/lambda-linux/lambda-machine-local
-import: []
+import:
+- package: github.com/docker/machine
+  version: v0.11.0
