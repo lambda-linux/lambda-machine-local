@@ -2,7 +2,6 @@ package libmachine
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"io"
 
@@ -65,15 +64,6 @@ func (api *Client) NewHost(driverName string, rawDriver []byte) (*host.Host, err
 		Driver:        driver,
 		DriverName:    driver.DriverName(),
 		HostOptions: &host.Options{
-			AuthOptions: &auth.Options{
-				CertDir:          api.certsDir,
-				CaCertPath:       filepath.Join(api.certsDir, "ca.pem"),
-				CaPrivateKeyPath: filepath.Join(api.certsDir, "ca-key.pem"),
-				ClientCertPath:   filepath.Join(api.certsDir, "cert.pem"),
-				ClientKeyPath:    filepath.Join(api.certsDir, "key.pem"),
-				ServerCertPath:   filepath.Join(api.GetMachinesDir(), "server.pem"),
-				ServerKeyPath:    filepath.Join(api.GetMachinesDir(), "server-key.pem"),
-			},
 			EngineOptions: &engine.Options{
 				InstallURL:    drivers.DefaultEngineInstallURL,
 				StorageDriver: "aufs",
@@ -165,8 +155,8 @@ func (api *Client) performCreate(h *host.Host) error {
 
 	log.Infof("Provisioning with %s...", provisioner.String())
 
-	// send fake SwarmOptions structure. On h its nil
-	if err := provisioner.Provision(swarm.Options{}, *h.HostOptions.AuthOptions, *h.HostOptions.EngineOptions); err != nil {
+	// send fake SwarmOptions, AuthOptions structure. On h its nil
+	if err := provisioner.Provision(swarm.Options{}, auth.Options{}, *h.HostOptions.EngineOptions); err != nil {
 		return fmt.Errorf("Error running provisioning: %s", err)
 	}
 
