@@ -1,10 +1,12 @@
-hash: 4abcf6735a1a1f0f41863a36462a8fd02becc0b5c48bedd079440b1abe7ea4ed
-updated: 2017-04-28T03:27:49.31235159Z
+hash: c00c6095a22ce358a4046ed359e326b88b84d153aa4bb2f6851555735b393788
+updated: 2018-01-08T14:18:47.182121114Z
 imports:
 - name: github.com/codegangsta/cli
   version: 0302d3914d2a6ad61404584cdae6e6dbc9c03599
 - name: github.com/docker/machine
   version: 5b274558ea6ca822c06dd407a4e774a0105c3f60
+- name: github.com/rhysd/go-github-selfupdate
+  version: cee0f074015effff1b4de3dd8aedc2c9fbc4470d
 - name: github.com/skarademir/naturalsort
   version: 69a5d87bef620f77ee8508db30c846b3b84b111e
 - name: golang.org/x/sys

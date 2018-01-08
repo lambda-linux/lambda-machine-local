@@ -10,6 +10,8 @@ import:
   version: d9157a9
   subpackages:
   - windows/registry
+- package: github.com/rhysd/go-github-selfupdate
+  version: cee0f07
 testImport:
 - package: github.com/stretchr/testify
   version: v1.1.3-4-g1f4a164
