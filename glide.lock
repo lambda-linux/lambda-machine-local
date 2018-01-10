@@ -1,5 +1,5 @@
-hash: 7f3a713d763b55d6af5ea2133db650ebc45eff683d20f3311880d1300b480a7d
-updated: 2018-01-10T13:46:09.597807803Z
+hash: 251eb315e92fbdcea2a4df0e8f8736e036b1bc5720d2c25b2799168d52aaa37b
+updated: 2018-01-10T14:02:30.346237972Z
 imports:
 - name: github.com/blang/semver
   version: 2ee87856327ba09384cabd113bc6b5d174e9ec0f
@@ -19,6 +19,8 @@ imports:
   version: 69a5d87bef620f77ee8508db30c846b3b84b111e
 - name: github.com/ulikunitz/xz
   version: 0c6b41e72360850ca4f98dc341fd999726ea007f
+- name: golang.org/x/net
+  version: 434ec0c7fe3742c984919a691b2018a6e9694425
 - name: golang.org/x/oauth2
   version: 30785a2c434e431ef7c507b54617d6a951d5f2b4
 - name: golang.org/x/sys

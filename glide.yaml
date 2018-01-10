@@ -24,6 +24,8 @@ import:
   version: 8152e7e
 - package: golang.org/x/oauth2
   version: 30785a2
+- package: golang.org/x/net
+  version: 434ec0c
 testImport:
 - package: github.com/stretchr/testify
   version: v1.1.3-4-g1f4a164
