@@ -1,0 +1,6 @@
+hash: 2d2ce1ee6d7d61882e3373a533c756f9a311908a75a239bea12bf573acd825c4
+updated: 2017-04-28T02:45:49.780397814Z
+imports:
+- name: github.com/docker/machine
+  version: 5b274558ea6ca822c06dd407a4e774a0105c3f60
+testImports: []
