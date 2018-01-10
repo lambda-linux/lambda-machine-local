@@ -22,6 +22,8 @@ import:
   version: 53e6ce1
 - package: github.com/inconshreveable/go-update
   version: 8152e7e
+- package: golang.org/x/oauth2
+  version: 30785a2
 testImport:
 - package: github.com/stretchr/testify
   version: v1.1.3-4-g1f4a164
