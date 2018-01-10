@@ -59,7 +59,7 @@ func TestSSHHostname(t *testing.T) {
 func TestDefaultSSHUsername(t *testing.T) {
 	username := newTestDriver("default").GetSSHUsername()
 
-	assert.Equal(t, "docker", username)
+	assert.Equal(t, "ll-user", username)
 }
 
 var parseShareFolderTestCases = []struct {
@@ -516,7 +516,7 @@ func mockCalls(t *testing.T, driver *Driver, expectedCalls []Call) {
 func TestCreateVM(t *testing.T) {
 	shareName, shareDir := getShareDriveAndName()
 
-	modifyVMcommand := "vbm modifyvm default --firmware bios --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 0 --biosbootmenu disabled --ostype Linux26_64 --cpus 1 --memory 1024 --acpi on --ioapic on --rtcuseutc on --natdnshostresolver1 off --natdnsproxy1 on --cpuhotplug off --pae on --hpet on --hwvirtex on --nestedpaging on --largepages on --vtxvpid on --accelerate3d off --boot1 dvd"
+	modifyVMcommand := "vbm modifyvm default --firmware bios --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 0 --biosbootmenu disabled --ostype Linux26_64 --cpus 1 --memory 2048 --acpi on --ioapic on --rtcuseutc on --natdnshostresolver1 off --natdnsproxy1 on --cpuhotplug off --pae on --hpet on --hwvirtex on --nestedpaging on --largepages on --vtxvpid on --accelerate3d off --boot1 dvd"
 	if runtime.GOOS == "windows" && runtime.GOARCH == "386" {
 		modifyVMcommand += " --longmode on"
 	}
@@ -529,8 +529,8 @@ func TestCreateVM(t *testing.T) {
 		{"vbm createvm --basefolder path/machines/default --name default --register", "", nil},
 		{modifyVMcommand, "", nil},
 		{"vbm modifyvm default --nic1 nat --nictype1 82540EM --cableconnected1 on", "", nil},
-		{"vbm storagectl default --name SATA --add sata --hostiocache on", "", nil},
-		{"vbm storageattach default --storagectl SATA --port 0 --device 0 --type dvddrive --medium path/machines/default/boot2docker.iso", "", nil},
+		{"vbm storagectl default --name SATA --add sata --hostiocache on --portcount 2", "", nil},
+		{"vbm storageattach default --storagectl SATA --port 0 --device 0 --type dvddrive --medium path/machines/default/lambda-linux-vbox.iso", "", nil},
 		{"vbm storageattach default --storagectl SATA --port 1 --device 0 --type hdd --medium path/machines/default/disk.vmdk", "", nil},
 		{"vbm guestproperty set default /VirtualBox/GuestAdd/SharedFolders/MountPrefix /", "", nil},
 		{"vbm guestproperty set default /VirtualBox/GuestAdd/SharedFolders/MountDir /", "", nil},
@@ -546,7 +546,7 @@ func TestCreateVM(t *testing.T) {
 func TestCreateVMWithSpecificNatNicType(t *testing.T) {
 	shareName, shareDir := getShareDriveAndName()
 
-	modifyVMcommand := "vbm modifyvm default --firmware bios --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 0 --biosbootmenu disabled --ostype Linux26_64 --cpus 1 --memory 1024 --acpi on --ioapic on --rtcuseutc on --natdnshostresolver1 off --natdnsproxy1 on --cpuhotplug off --pae on --hpet on --hwvirtex on --nestedpaging on --largepages on --vtxvpid on --accelerate3d off --boot1 dvd"
+	modifyVMcommand := "vbm modifyvm default --firmware bios --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 0 --biosbootmenu disabled --ostype Linux26_64 --cpus 1 --memory 2048 --acpi on --ioapic on --rtcuseutc on --natdnshostresolver1 off --natdnsproxy1 on --cpuhotplug off --pae on --hpet on --hwvirtex on --nestedpaging on --largepages on --vtxvpid on --accelerate3d off --boot1 dvd"
 	if runtime.GOOS == "windows" && runtime.GOARCH == "386" {
 		modifyVMcommand += " --longmode on"
 	}
@@ -560,8 +560,8 @@ func TestCreateVMWithSpecificNatNicType(t *testing.T) {
 		{"vbm createvm --basefolder path/machines/default --name default --register", "", nil},
 		{modifyVMcommand, "", nil},
 		{"vbm modifyvm default --nic1 nat --nictype1 Am79C973 --cableconnected1 on", "", nil},
-		{"vbm storagectl default --name SATA --add sata --hostiocache on", "", nil},
-		{"vbm storageattach default --storagectl SATA --port 0 --device 0 --type dvddrive --medium path/machines/default/boot2docker.iso", "", nil},
+		{"vbm storagectl default --name SATA --add sata --hostiocache on --portcount 2", "", nil},
+		{"vbm storageattach default --storagectl SATA --port 0 --device 0 --type dvddrive --medium path/machines/default/lambda-linux-vbox.iso", "", nil},
 		{"vbm storageattach default --storagectl SATA --port 1 --device 0 --type hdd --medium path/machines/default/disk.vmdk", "", nil},
 		{"vbm guestproperty set default /VirtualBox/GuestAdd/SharedFolders/MountPrefix /", "", nil},
 		{"vbm guestproperty set default /VirtualBox/GuestAdd/SharedFolders/MountDir /", "", nil},
