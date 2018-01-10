@@ -61,6 +61,10 @@ func SetDebug(debug bool) {
 	logger.SetDebug(debug)
 }
 
+func GetDebug() bool {
+	return logger.GetDebug()
+}
+
 func SetOutWriter(out io.Writer) {
 	logger.SetOutWriter(out)
 }

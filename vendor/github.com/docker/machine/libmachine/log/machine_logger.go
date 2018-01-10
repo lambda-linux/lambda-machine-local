@@ -4,6 +4,7 @@ import "io"
 
 type MachineLogger interface {
 	SetDebug(debug bool)
+	GetDebug() bool
 
 	SetOutWriter(io.Writer)
 	SetErrWriter(io.Writer)
