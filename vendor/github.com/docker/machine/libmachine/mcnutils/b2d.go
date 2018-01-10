@@ -518,7 +518,7 @@ func (b *B2dUtils) UpdateISOCache(isoURL string) error {
 	// recreate the cache dir if it has been manually deleted
 	if _, err := os.Stat(b.imgCachePath); os.IsNotExist(err) {
 		log.Infof("Image cache directory does not exist, creating it at %s...", b.imgCachePath)
-		if err := os.Mkdir(b.imgCachePath, 0700); err != nil {
+		if err := os.MkdirAll(b.imgCachePath, 0700); err != nil {
 			return err
 		}
 	}
