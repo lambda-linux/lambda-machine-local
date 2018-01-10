@@ -18,32 +18,32 @@ You can use the following commands to install or upgrade:
 
 On OS X
 ```console
-$ curl -L https://github.com/lambda-linux/lambda-machine-local/releases/download/${data['github_tag']}/lambda-machine-local-Darwin-x86_64 > /usr/local/bin/lambda-machine-local && ${'\\\\'}
+$ curl -L https://github.com/lambda-linux/lambda-machine-local/releases/download/${data['github_tag']}/lambda-machine-local_darwin_amd64 > /usr/local/bin/lambda-machine-local && ${'\\\\'}
   chmod +x /usr/local/bin/lambda-machine-local
 ```
 On Linux
 ```console
-$ curl -L https://github.com/lambda-linux/lambda-machine-local/releases/download/${data['github_tag']}/lambda-machine-local-Linux-x86_64 > /tmp/lambda-machine-local && ${'\\\\'}
+$ curl -L https://github.com/lambda-linux/lambda-machine-local/releases/download/${data['github_tag']}/lambda-machine-local_linux_amd64 > /tmp/lambda-machine-local && ${'\\\\'}
   chmod +x /tmp/lambda-machine-local && ${'\\\\'}
   sudo cp /tmp/lambda-machine-local /usr/local/bin/lambda-machine-local
 ```
 On Windows with [Git Bash](https://git-for-windows.github.io/) or [MSYS2](http://www.msys2.org/)
 ```console
 $ if [[ ! -d "$HOME/bin" ]]; then mkdir -p "$HOME/bin"; fi && ${'\\\\'}
-  curl -L https://github.com/lambda-linux/lambda-machine-local/releases/download/${data['github_tag']}/lambda-machine-local-Windows-x86_64.exe > "$HOME/bin/lambda-machine-local.exe" && ${'\\\\'}
+  curl -L https://github.com/lambda-linux/lambda-machine-local/releases/download/${data['github_tag']}/lambda-machine-local_windows_amd64.exe > "$HOME/bin/lambda-machine-local.exe" && ${'\\\\'}
   chmod +x "$HOME/bin/lambda-machine-local.exe"
 ```
 
 ${'#### Checksum'}
-- lambda-machine-local-Darwin-x86_64
-    - sha256 `${data['lambda-machine-local-Darwin-x86_64']['sha256']}`
-    - md5 `${data['lambda-machine-local-Darwin-x86_64']['md5']}`
-- lambda-machine-local-Linux-x86_64
-    - sha256 `${data['lambda-machine-local-Linux-x86_64']['sha256']}`
-    - md5 `${data['lambda-machine-local-Linux-x86_64']['md5']}`
-- lambda-machine-local-Windows-x86_64
-    - sha256 `${data['lambda-machine-local-Windows-x86_64.exe']['sha256']}`
-    - md5 `${data['lambda-machine-local-Windows-x86_64.exe']['md5']}`
+- lambda-machine-local_darwin_amd64
+    - sha256 `${data['lambda-machine-local_darwin_amd64']['sha256']}`
+    - md5 `${data['lambda-machine-local_darwin_amd64']['md5']}`
+- lambda-machine-local_linux_amd64
+    - sha256 `${data['lambda-machine-local_linux_amd64']['sha256']}`
+    - md5 `${data['lambda-machine-local_linux_amd64']['md5']}`
+- lambda-machine-local_windows_amd64
+    - sha256 `${data['lambda-machine-local_windows_amd64.exe']['sha256']}`
+    - md5 `${data['lambda-machine-local_windows_amd64.exe']['md5']}`
 """
     release_desc_template = mako.template.Template(templ)
 
@@ -61,9 +61,9 @@ def binary_checksums(bindir):
     checksums = {}
 
     filenames = [
-        'lambda-machine-local-Darwin-x86_64',
-        'lambda-machine-local-Linux-x86_64',
-        'lambda-machine-local-Windows-x86_64.exe'
+        'lambda-machine-local_darwin_amd64',
+        'lambda-machine-local_linux_amd64',
+        'lambda-machine-local_windows_amd64.exe'
     ]
 
     for filename in filenames:
@@ -138,9 +138,9 @@ def main():
     subprocess.check_output(shlex.split(cmd))
 
     filenames = [
-        'lambda-machine-local-Darwin-x86_64',
-        'lambda-machine-local-Linux-x86_64',
-        'lambda-machine-local-Windows-x86_64.exe'
+        'lambda-machine-local_darwin_amd64',
+        'lambda-machine-local_linux_amd64',
+        'lambda-machine-local_windows_amd64.exe'
     ]
     for filename in filenames:
         print "Uploading %s" % filename
