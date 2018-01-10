@@ -93,10 +93,10 @@ func (e ErrPluginBinaryNotFound) Error() string {
 }
 
 // driverPath finds the path of a driver binary by its name.
-//  + If the driver is a core driver, there is no separate driver binary. We reuse current binary if it's `docker-machine`
-// or we assume `docker-machine` is in the PATH.
+//  + If the driver is a core driver, there is no separate driver binary. We reuse current binary if it's `lambda-machine-local`
+// or we assume `lambda-machine-local` is in the PATH.
 //  + If the driver is NOT a core driver, then the separate binary must be in the PATH and it's name must be
-// `docker-machine-driver-driverName`
+// `lambda-machine-local-driver-driverName`
 func driverPath(driverName string) string {
 	for _, coreDriver := range CoreDrivers {
 		if coreDriver == driverName {
@@ -104,11 +104,11 @@ func driverPath(driverName string) string {
 				return os.Args[0]
 			}
 
-			return "docker-machine"
+			return "lambda-machine-local"
 		}
 	}
 
-	return fmt.Sprintf("docker-machine-driver-%s", driverName)
+	return fmt.Sprintf("lambda-machine-local-driver-%s", driverName)
 }
 
 func NewPlugin(driverName string) (*Plugin, error) {
