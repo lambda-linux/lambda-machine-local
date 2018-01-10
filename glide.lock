@@ -1,5 +1,5 @@
-hash: 9835b5290b6f8ce897462cdf843e937be1a83b336479e6b92b0f25044230a8b8
-updated: 2018-01-10T12:43:53.400278526Z
+hash: b28410a18b0781e9365aed7fb0637eb9e914a0681fb7e6e8cc6d13e44a332b13
+updated: 2018-01-10T12:46:34.414603668Z
 imports:
 - name: github.com/blang/semver
   version: 2ee87856327ba09384cabd113bc6b5d174e9ec0f
@@ -13,6 +13,8 @@ imports:
   version: cee0f074015effff1b4de3dd8aedc2c9fbc4470d
 - name: github.com/skarademir/naturalsort
   version: 69a5d87bef620f77ee8508db30c846b3b84b111e
+- name: github.com/ulikunitz/xz
+  version: 0c6b41e72360850ca4f98dc341fd999726ea007f
 - name: golang.org/x/sys
   version: d9157a9621b69ad1d8d77a1933590c416593f24f
   subpackages:
