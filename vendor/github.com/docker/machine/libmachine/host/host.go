@@ -154,10 +154,13 @@ func (h *Host) Restart() error {
 			return err
 		}
 	} else if drivers.MachineInState(h.Driver, state.Running)() {
-		if err := h.Driver.Restart(); err != nil {
+		// Given the way we provision `docker` in Lambda Linux VirtualBox
+		// flavor, we cannot do a driver level restart. Instead we stop and start
+		// the host
+		if err := h.Stop(); err != nil {
 			return err
 		}
-		if err := mcnutils.WaitFor(drivers.MachineInState(h.Driver, state.Running)); err != nil {
+		if err := h.Start(); err != nil {
 			return err
 		}
 	}
