@@ -35,7 +35,6 @@ var (
 		"Name":          "NAME",
 		"DriverName":    "DRIVER",
 		"State":         "STATE",
-		"URL":           "URL",
 		"EngineOptions": "ENGINE_OPTIONS",
 		"Error":         "ERRORS",
 		"DockerVersion": "DOCKER",
@@ -47,7 +46,6 @@ type HostListItem struct {
 	Name          string
 	DriverName    string
 	State         state.State
-	URL           string
 	EngineOptions *engine.Options
 	Error         string
 	DockerVersion string
@@ -315,7 +313,6 @@ func attemptGetHostState(h *host.Host, stateQueryChan chan<- HostListItem) {
 		Name:          h.Name,
 		DriverName:    h.Driver.DriverName(),
 		State:         currentState,
-		URL:           url,
 		EngineOptions: engineOptions,
 		DockerVersion: dockerVersion,
 		Error:         hostError,
