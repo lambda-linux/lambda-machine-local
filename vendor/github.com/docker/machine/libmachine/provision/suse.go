@@ -14,18 +14,6 @@ import (
 	"github.com/docker/machine/libmachine/swarm"
 )
 
-func init() {
-	Register("openSUSE", &RegisteredProvisioner{
-		New: NewOpenSUSEProvisioner,
-	})
-	Register("SUSE Linux Enterprise Desktop", &RegisteredProvisioner{
-		New: NewSLEDProvisioner,
-	})
-	Register("SUSE Linux Enterprise Server", &RegisteredProvisioner{
-		New: NewSLESProvisioner,
-	})
-}
-
 func NewSLEDProvisioner(d drivers.Driver) Provisioner {
 	return &SUSEProvisioner{
 		NewSystemdProvisioner("sled", d),
