@@ -1,6 +1,8 @@
-hash: c00c6095a22ce358a4046ed359e326b88b84d153aa4bb2f6851555735b393788
-updated: 2018-01-08T14:18:47.182121114Z
+hash: 4e1b8bb82a745427e950848a7e33465dca55a561d92ba9b8c911416b5198c3c7
+updated: 2018-01-10T12:38:49.340059394Z
 imports:
+- name: github.com/blang/semver
+  version: 2ee87856327ba09384cabd113bc6b5d174e9ec0f
 - name: github.com/codegangsta/cli
   version: 0302d3914d2a6ad61404584cdae6e6dbc9c03599
 - name: github.com/docker/machine

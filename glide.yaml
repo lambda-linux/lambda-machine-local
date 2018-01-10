@@ -12,6 +12,8 @@ import:
   - windows/registry
 - package: github.com/rhysd/go-github-selfupdate
   version: cee0f07
+- package: github.com/blang/semver
+  version: 2ee8785
 testImport:
 - package: github.com/stretchr/testify
   version: v1.1.3-4-g1f4a164
