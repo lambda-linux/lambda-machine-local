@@ -204,6 +204,12 @@ func (h *Host) Upgrade() error {
 		return err
 	}
 
+	// In case of lambda provisioner, we just call "Upgrade" and not bother with
+	// the rest of the logic
+	if provisioner.String() == "lambda" {
+		return provisioner.Package("docker", pkgaction.Upgrade)
+	}
+
 	dockerVersion, err := h.DockerVersion()
 	if err != nil {
 		return err
