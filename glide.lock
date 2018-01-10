@@ -1,5 +1,5 @@
-hash: 4e1b8bb82a745427e950848a7e33465dca55a561d92ba9b8c911416b5198c3c7
-updated: 2018-01-10T12:38:49.340059394Z
+hash: 9835b5290b6f8ce897462cdf843e937be1a83b336479e6b92b0f25044230a8b8
+updated: 2018-01-10T12:43:53.400278526Z
 imports:
 - name: github.com/blang/semver
   version: 2ee87856327ba09384cabd113bc6b5d174e9ec0f
@@ -7,6 +7,8 @@ imports:
   version: 0302d3914d2a6ad61404584cdae6e6dbc9c03599
 - name: github.com/docker/machine
   version: 5b274558ea6ca822c06dd407a4e774a0105c3f60
+- name: github.com/google/go-github
+  version: c988f775700b9ab14b5acb7502046fa341daf82d
 - name: github.com/rhysd/go-github-selfupdate
   version: cee0f074015effff1b4de3dd8aedc2c9fbc4470d
 - name: github.com/skarademir/naturalsort
