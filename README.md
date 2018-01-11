@@ -340,6 +340,7 @@ Following `lambda-machine-local` commands follow this pattern &ndash;
   * `lambda-machine-local start`
   * `lambda-machine-local status`
   * `lambda-machine-local stop`
+  * `lambda-machine-local updateiso`
 
 <a name="auto_updates_and_crash_reporting"></a>
 #### Auto updates and crash reporting
@@ -387,6 +388,8 @@ Lambda Machine Local CLI has the following sub-commands.
   * [start](#cli_start)
   * [status](#cli_status)
   * [stop](#cli_stop)
+  * [updatecli](#cli_updatecli)
+  * [updateiso](#cli_updateiso)
 
 <a name="cli_create"></a>
 #### create
@@ -925,6 +928,27 @@ Machine "dev" was stopped.
 $ lambda-machine-local ls
 NAME   DRIVER       STATE     ERRORS
 dev    virtualbox   Stopped
+```
+
+<a name="cli_updatecli"></a>
+#### updatecli
+
+```console
+Usage: lambda-machine-local updatecli [arg...]
+
+Update Lambda Machine Local CLI to the latest version
+```
+
+<a name="cli_updateiso"></a>
+#### updateiso
+
+```console
+Usage: lambda-machine-local updateiso [arg...]
+
+Update machine ISO image to the latest version
+
+Description:
+   Argument(s) are one or more machine names.
 ```
 
 <a name="customizing_lambda_linux_virtualbox_flavor"></a>
