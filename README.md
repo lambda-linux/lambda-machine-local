@@ -105,7 +105,7 @@ Following is the list of components supported by Lambda Machine Local.
 | Docker Engine | Version [17.09.1-ce](https://github.com/moby/moby/releases/tag/v17.09.1-ce)  without Swarm support |
 | Storage Driver| [Overlay2](https://docs.docker.com/v17.06/engine/userguide/storagedriver/overlayfs-driver/) with ext4 as backing filesystem |
 | VirtualBox Guest Additions | Version [5.1.30](http://download.virtualbox.org/virtualbox/5.1.30/) is included for shared filesystem support |
-| Libmachine | Lambda Machine Local uses libmachine version [0.11.0](https://github.com/docker/machine/tree/v0.10.0/libmachine) to manage local container host OS |
+| Libmachine | Lambda Machine Local uses libmachine version [0.11.0](https://github.com/docker/machine/tree/v0.11.0/libmachine) to manage local container host OS |
 
 <a name="installation"></a>
 ## Installation
